@@ -94,21 +94,17 @@ export default async function Page({ params }: { params: Promise<Params> }) {
 export async function generateStaticParams() {
   const query = defineQuery(ALLPAGE_QUERY);
 
-  const allslug = await client.fetch(
-    query,
-    {},
-    {
-      cache: "no-store",
-    }
-  );
-
-  const pageslugs = allslug
-    .filter((item: any) => item.slug !== "investors")
-    .map((item: any) => ({
-      slug: item.slug,
-    }));
-
-  return pageslugs;
+  try {
+    const allslug = await client.fetch(query, {}, { cache: "no-store" });
+    if (!Array.isArray(allslug)) return [];
+    return allslug
+      .filter((item: any) => item?.slug && item.slug !== "investors")
+      .map((item: any) => ({ slug: item.slug }));
+  } catch {
+    // Sanity unreachable (e.g. placeholder env vars during initial deploy) —
+    // skip prebuilding static slugs so the build succeeds.
+    return [];
+  }
 }
 
 
