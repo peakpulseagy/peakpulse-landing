@@ -1,0 +1,163 @@
+/* ── Testimonials section ── */
+.multi-column-3 {
+  padding: 7rem 0;
+  background: #080C14;
+  position: relative;
+  overflow: hidden;
+}
+
+.multi-column-3::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+}
+
+.multi-column-3 .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  position: relative;
+}
+
+/* ── Section title ── */
+.multi-column-3 .section-title {
+  font-family: 'Syne', system-ui, sans-serif;
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  line-height: 1.05;
+  text-align: center;
+  margin-bottom: 3.5rem;
+  color: #F1F5F9;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* ── Grid ── */
+.multi-column-3 .columns-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+@media (max-width: 1024px) {
+  .multi-column-3 .columns-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .multi-column-3 .columns-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Card ── */
+.multi-column-3 .card {
+  position: relative;
+  padding: 1.75rem;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: #131B2A;
+  transition: all 0.34s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 250px;
+  overflow: hidden;
+}
+
+.multi-column-3 .card::before {
+  content: '"';
+  position: absolute;
+  top: 1rem;
+  right: 1.25rem;
+  font-size: 5rem;
+  font-family: Georgia, serif;
+  color: rgba(255, 92, 92, 0.12);
+  line-height: 1;
+  font-weight: 700;
+}
+
+.multi-column-3 .card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(255, 92, 92, 0.2);
+  box-shadow: 0 20px 56px rgba(0, 0, 0, 0.4);
+  background: #18243A;
+}
+
+/* featured card */
+.multi-column-3 .card.featured {
+  border-color: rgba(255, 92, 92, 0.3);
+  background: linear-gradient(160deg, rgba(255, 92, 92, 0.07) 0%, #131B2A 60%);
+  box-shadow: 0 0 0 1px rgba(255, 92, 92, 0.12), 0 16px 48px rgba(0, 0, 0, 0.3);
+}
+
+/* top accent bar */
+.multi-column-3 .card-accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  background: linear-gradient(to right, #FF5C5C, #00D4AA);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s ease;
+}
+
+.multi-column-3 .card:hover .card-accent { transform: scaleX(1); }
+
+/* ── Text ── */
+.multi-column-3 .card-title {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 0;
+  color: #CBD5E1;
+  font-weight: 500;
+}
+
+.multi-column-3 .card-title-sub {
+  font-size: 0.8rem;
+  line-height: 1.4;
+  margin-bottom: 0;
+  color: #546280;
+  font-weight: 500;
+}
+
+.multi-column-3 .card-description {
+  font-size: 0.875rem;
+  line-height: 1.65;
+  margin-bottom: 1rem;
+  color: #8B9EC0;
+}
+
+/* ── Stars ── */
+.multi-column-3 .stars span {
+  color: #f59e0b;
+  margin-right: 1px;
+}
+
+/* ── Avatar badge ── */
+.multi-column-3 .badge {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+  border-radius: 50%;
+  color: #fff;
+  background: linear-gradient(135deg, #FF5C5C, #00D4AA);
+  font-size: 0.75rem;
+  line-height: 1;
+  width: 2.25rem;
+  height: 2.25rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ── Fade-in scroll animation ── */
+.multi-column-3 .fade-in {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.multi-column-3 .fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}

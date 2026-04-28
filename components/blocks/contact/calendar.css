@@ -1,0 +1,223 @@
+/* ── Booking wrapper ── */
+.Booking_Wrapper {
+  font-family: 'DM Sans', Inter, system-ui, sans-serif;
+  padding: 2rem 0;
+}
+
+/* ── Header ── */
+.book-header {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #F1F5F9;
+  font-family: 'Syne', system-ui, sans-serif;
+  letter-spacing: -0.02em;
+}
+
+/* ── Layout ── */
+.layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ── Cards ── */
+.calendar,
+.details {
+  background: #131B2A;
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35);
+}
+
+/* ── Calendar header ── */
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.calendar-header h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #F1F5F9;
+  font-family: 'Syne', system-ui, sans-serif;
+}
+
+.calendar-header button {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  width: 34px;
+  height: 34px;
+  cursor: pointer;
+  font-size: 15px;
+  color: #8B9EC0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.calendar-header button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #F1F5F9;
+}
+
+/* ── Weekdays ── */
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #546280;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ── Day grid ── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+
+.day {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.03);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #8B9EC0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.day:hover {
+  background: rgba(255, 92, 92, 0.1);
+  border-color: rgba(255, 92, 92, 0.3);
+  color: #F1F5F9;
+}
+
+.day.active {
+  background: linear-gradient(135deg, #FF5C5C, #00D4AA);
+  color: #ffffff;
+  border-color: transparent;
+  font-weight: 700;
+  box-shadow: 0 4px 16px rgba(255, 92, 92, 0.4);
+}
+
+.grid div { min-height: 40px; }
+
+/* ── Details panel ── */
+.details h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+  color: #F1F5F9;
+  font-family: 'Syne', system-ui, sans-serif;
+}
+
+.details p {
+  font-size: 0.85rem;
+  color: #8B9EC0;
+  margin-bottom: 1rem;
+}
+
+/* ── Time slots ── */
+.slots {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.slot {
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.03);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #CBD5E1;
+  cursor: pointer;
+  transition: all 0.22s ease;
+}
+
+.slot:hover {
+  background: rgba(255, 92, 92, 0.08);
+  border-color: rgba(255, 92, 92, 0.25);
+  color: #F1F5F9;
+}
+
+.slot.active {
+  background: rgba(255, 92, 92, 0.15);
+  border-color: rgba(255, 92, 92, 0.4);
+  color: #FF7A7A;
+  font-weight: 600;
+}
+
+.slot.booked,
+.slot.slot-passed {
+  text-decoration: line-through;
+  background: rgba(255, 255, 255, 0.02);
+  color: #3A4A5E;
+  border-color: rgba(255, 255, 255, 0.04);
+  cursor: not-allowed;
+}
+
+.fully-booked {
+  color: #FF5C5C;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.fully-booked-day {
+  background: rgba(255, 92, 92, 0.2) !important;
+  color: #F1F5F9 !important;
+  position: relative;
+  cursor: not-allowed;
+}
+
+.fully-booked-day::before,
+.fully-booked-day::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 115%;
+  height: 1.5px;
+  background: rgba(255, 92, 92, 0.5);
+}
+
+.fully-booked-day::before  { transform: translate(-50%, -50%) rotate(45deg); }
+.fully-booked-day::after   { transform: translate(-50%, -50%) rotate(-45deg); }
+
+/* ── Empty state ── */
+.details > p {
+  font-size: 0.85rem;
+  color: #546280;
+  text-align: center;
+  margin-top: 2.5rem;
+}
+
+/* ── Responsive ── */
+@media (min-width: 900px) {
+  .layout {
+    flex-direction: row;
+  }
+
+  .calendar { flex: 1; }
+  .details  { flex: 0 0 280px; }
+}
+
+@media (max-width: 900px) {
+  .calendar,
+  .details { padding: 1rem; }
+}

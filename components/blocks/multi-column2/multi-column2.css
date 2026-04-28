@@ -1,0 +1,142 @@
+/* ── Pricing section ── */
+.multi-column-2 {
+  background: #0F1624;
+  position: relative;
+  overflow: hidden;
+}
+
+.multi-column-2::before {
+  content: '';
+  position: absolute;
+  top: -200px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 800px;
+  height: 400px;
+  background: radial-gradient(ellipse, rgba(0, 212, 170, 0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ── Section title ── */
+.section-title {
+  font-family: 'Syne', system-ui, sans-serif;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  line-height: 1.0;
+  text-align: center;
+  margin-bottom: 4rem;
+  font-weight: 800;
+  color: #F1F5F9;
+  letter-spacing: -0.025em;
+}
+
+/* ── Cards grid ── */
+.cards-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+/* ── Card ── */
+.card {
+  position: relative;
+  padding: 1.75rem;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: #131B2A;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  min-height: 220px;
+}
+
+/* top accent bar */
+.card-accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  background: linear-gradient(to right, #FF5C5C, #00D4AA);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card:hover {
+  border-color: rgba(0, 212, 170, 0.25);
+  transform: translateY(-8px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(0, 212, 170, 0.08);
+  background: #18243A;
+}
+
+.card:hover .card-accent { transform: scaleX(1); }
+
+/* featured card */
+.card-featured {
+  border-color: rgba(0, 212, 170, 0.3);
+  background: linear-gradient(160deg, rgba(0, 212, 170, 0.08) 0%, #131B2A 60%);
+  box-shadow: 0 0 0 1px rgba(0, 212, 170, 0.15), 0 20px 60px rgba(0, 0, 0, 0.3);
+  transform: translateY(-8px) scale(1.02);
+}
+
+.card-featured:hover {
+  transform: translateY(-14px) scale(1.02);
+  border-color: rgba(0, 212, 170, 0.45);
+}
+
+/* ── Text ── */
+.card-title {
+  font-family: 'Syne', system-ui, sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  color: #F1F5F9;
+  letter-spacing: -0.01em;
+}
+
+.card-description {
+  font-size: 0.875rem;
+  line-height: 1.65;
+  color: #8B9EC0;
+  margin-bottom: 1.25rem;
+}
+
+/* ── Badge ── */
+.card-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 14px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #080C14;
+  background: linear-gradient(135deg, #FF5C5C, #00D4AA);
+  position: absolute;
+  bottom: 1.25rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .cards-grid { grid-template-columns: repeat(2, 1fr); }
+  .card-featured { transform: none; }
+}
+
+@media (max-width: 640px) {
+  .cards-grid { grid-template-columns: 1fr; }
+}
+
+@media (width >= 768px) {
+  .section-title { font-size: clamp(2.25rem, 4vw, 3rem); }
+}
+
+@media (width >= 1024px) {
+  .section-title { font-size: clamp(2.75rem, 4vw, 3.5rem); }
+  .multi-column-2 { padding: 80px 0; }
+}
