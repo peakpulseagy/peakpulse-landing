@@ -1,8 +1,16 @@
 import { createClient } from "next-sanity";
 
+/**
+ * Fallbacks keep the build green when the env vars aren't configured
+ * (e.g. on a fresh Vercel deploy before Sanity is wired up).
+ * `placeholder` is a syntactically valid projectId that just won't fetch any data.
+ */
+const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "placeholder";
+const dataset   = process.env.NEXT_PUBLIC_SANITY_DATASET   || "production";
+
 export const client = createClient({
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
+  projectId,
+  dataset,
   apiVersion: "2026-01-30",
   useCdn: true,
   token: process.env.SANITY_WRITE_TOKEN,
