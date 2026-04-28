@@ -382,15 +382,38 @@ html { scroll-behavior: smooth; }
 }
 
 .footer-list li {
-  font-size: 0.95rem;
   margin-bottom: 0.85rem;
-  color: var(--text-sub);
-  transition: color 0.25s var(--ease-luxe);
-  cursor: default;
-  font-family: var(--font-body);
 }
 
-.footer-list li:hover { color: var(--text); }
+.footer-list li button,
+.footer-list li a {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--text-sub);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  text-decoration: none;
+  transition: color 0.25s var(--ease-luxe), transform 0.25s var(--ease-luxe);
+  display: inline-block;
+}
+
+.footer-list li button:hover,
+.footer-list li a:hover {
+  color: var(--text);
+  transform: translateX(3px);
+}
+
+.footer-list li.footer-note {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  cursor: default;
+}
 
 .footer-note {
   font-family: var(--font-mono);

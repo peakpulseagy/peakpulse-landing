@@ -1284,7 +1284,7 @@ export default function EditorialLanding() {
       {/* ════════════════════════════════════════
           9 · TESTIMONIALS
           ════════════════════════════════════════ */}
-      <section className="ed-quotes">
+      <section className="ed-quotes" id="testimonials">
         <div className="ed-wrap">
           <div className="ed-quotes__head">
             <span className="eyebrow reveal">Client stories</span>
