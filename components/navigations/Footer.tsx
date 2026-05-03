@@ -61,7 +61,7 @@ const Footer = () => {
             <ul className="footer-list">
               <li><a href="mailto:hello@peakpulse.agency">hello@peakpulse.agency</a></li>
               <li><a href="https://instagram.com/peakpulseagency" target="_blank" rel="noopener noreferrer">@peakpulseagency</a></li>
-              <li><button type="button" onClick={() => goTo("contact")}>Book a strategy call</button></li>
+              <li><a href="https://calendly.com/fdr-peakpulse/30min" target="_blank" rel="noopener noreferrer">Book a strategy call</a></li>
               <li className="footer-note">4-hour response promise</li>
             </ul>
           </div>

@@ -248,7 +248,7 @@ function StickyCTA() {
           <strong>Now booking growth audits</strong>
           <small>· 4-hour reply</small>
         </div>
-        <button className="ed-cta ed-cta--sm" onClick={() => scrollTo("contact")}>
+        <button className="ed-cta ed-cta--sm" onClick={openBooking}>
           Get a Free Audit
           <span className="ed-cta__arrow" aria-hidden>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
@@ -264,6 +264,11 @@ function StickyCTA() {
 const scrollTo = (id: string) => {
   const el = document.getElementById(id);
   if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+};
+
+const BOOKING_URL = "https://calendly.com/fdr-peakpulse/30min";
+const openBooking = () => {
+  window.open(BOOKING_URL, "_blank", "noopener,noreferrer");
 };
 
 /* ──────────────────────────────────────────────
@@ -482,7 +487,7 @@ export default function EditorialLanding() {
               </p>
 
               <div className="ed-hero__cta-row reveal delay-3">
-                <button onClick={() => scrollTo("contact")} className="ed-cta">
+                <button onClick={openBooking} className="ed-cta">
                   Get a Free Audit
                   <span className="ed-cta__arrow" aria-hidden>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
@@ -1144,7 +1149,7 @@ export default function EditorialLanding() {
               automation, delivered by people who treat your P&amp;L like
               their own.
             </p>
-            <button className="ed-cta reveal delay-3" onClick={() => scrollTo("contact")}>
+            <button className="ed-cta reveal delay-3" onClick={openBooking}>
               Book a Strategy Call
               <span className="ed-cta__arrow" aria-hidden>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
@@ -1258,7 +1263,7 @@ export default function EditorialLanding() {
                 </ul>
                 <button
                   className={p.featured ? "ed-cta ed-price__cta" : "ed-price__cta ed-price__cta--ghost"}
-                  onClick={() => scrollTo("contact")}
+                  onClick={openBooking}
                 >
                   {p.cta}
                   {p.featured && (
@@ -1359,7 +1364,7 @@ export default function EditorialLanding() {
             first 30 days.
           </p>
           <div className="ed-final__cta reveal delay-3">
-            <button onClick={() => scrollTo("contact")} className="ed-cta">
+            <button onClick={openBooking} className="ed-cta">
               Book a Strategy Call
               <span className="ed-cta__arrow" aria-hidden>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">

@@ -153,8 +153,15 @@ const Header = ({ navigation }: { navigation: HeaderValues }) => {
           })}
         </ul>
 
-        {/* CTA (optional) */}
-        <button onClick={() => handleScroll("contact")} className="cta-button">Book Call</button>
+        {/* CTA → Calendly booking */}
+        <a
+          href="https://calendly.com/fdr-peakpulse/30min"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="cta-button"
+        >
+          Book Call
+        </a>
         <button
           className="menu-button"
           aria-label="Open menu"
@@ -206,15 +213,15 @@ const Header = ({ navigation }: { navigation: HeaderValues }) => {
             })}
           </ul>
 
-          <button
+          <a
             className="mobile-cta"
-            onClick={() => {
-              handleScroll("contact");
-              setMenuOpen(false);
-            }}
+            href="https://calendly.com/fdr-peakpulse/30min"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => setMenuOpen(false)}
           >
             Book Call
-          </button>
+          </a>
         </div>
     </header>
   );
