@@ -481,9 +481,9 @@ export default function EditorialLanding() {
             <div className="ed-hero__under">
               <p className="ed-hero__lede reveal delay-3">
                 <strong>PeakPulse Agency</strong> is a performance-driven digital
-                solutions firm delivering expert web development, professional
-                video production, strategic digital marketing, and comprehensive
-                automation for small and large businesses alike.
+                solutions firm delivering web development, social media management,
+                content production, and a full growth engine — all in one
+                accountable monthly package.
               </p>
 
               <div className="ed-hero__cta-row reveal delay-3">
@@ -523,16 +523,16 @@ export default function EditorialLanding() {
                 <span className="url">peakpulse.agency / dashboard</span>
               </div>
               <div className="ed-frame__body">
-                <span className="ed-frame__pill">Live · Q2 Cohort</span>
+                <span className="ed-frame__pill">Live · Client cohort</span>
                 <h3 className="ed-frame__h">
-                  Pipeline up <em>+218%</em><br />since launch.
+                  Engagement up <em>+218%</em><br />month over month.
                 </h3>
                 <div className="ed-frame__bars" aria-hidden>
                   <span /><span /><span /><span /><span /><span /><span />
                 </div>
                 <div className="ed-frame__row">
-                  <span>30-DAY MRR · <b>$1.42M</b></span>
-                  <span>CAC · <b>&minus;41%</b></span>
+                  <span>30-DAY REACH · <b>1.4M</b></span>
+                  <span>CTR · <b>+38%</b></span>
                 </div>
               </div>
             </div>
@@ -571,14 +571,14 @@ export default function EditorialLanding() {
             <div className="ed-trust__track">
               {[0, 1].map((dup) => (
                 <ul key={dup} className="ed-trust__logos">
-                  <li>Halcyon&nbsp;<i>&amp; Co.</i></li>
-                  <li>Northvale</li>
-                  <li>Marée<i>°</i></li>
-                  <li>Atelier 88</li>
-                  <li>Mira&nbsp;Studios</li>
-                  <li>Bricklane</li>
-                  <li>Sundara<i>°</i></li>
-                  <li>Voltaire</li>
+                  <li>MIR&nbsp;Capital</li>
+                  <li>BMC&nbsp;AI</li>
+                  <li>Berkeley&nbsp;Travel</li>
+                  <li>Atmosnav</li>
+                  <li>M&nbsp;Residences&nbsp;Budapest</li>
+                  <li>Bush&nbsp;Hall&nbsp;Music</li>
+                  <li>Star&nbsp;Ancients</li>
+                  <li>Ledger&nbsp;Rocket</li>
                 </ul>
               ))}
             </div>
@@ -609,20 +609,20 @@ export default function EditorialLanding() {
 
           <div className="ed-metrics__grid">
             <div className="ed-metric reveal">
-              <div className="ed-metric__value"><Counter to={312} suffix="%" /></div>
-              <div className="ed-metric__label">Avg. conversion lift</div>
+              <div className="ed-metric__value"><Counter to={36} suffix="+" /></div>
+              <div className="ed-metric__label">Live client sites</div>
             </div>
             <div className="ed-metric reveal delay-1">
-              <div className="ed-metric__value"><Counter to={142} /></div>
-              <div className="ed-metric__label">Projects shipped</div>
+              <div className="ed-metric__value"><Counter to={6} /></div>
+              <div className="ed-metric__label">Disciplines, one team</div>
             </div>
             <div className="ed-metric reveal delay-2">
-              <div className="ed-metric__value">$<Counter to={14} />M</div>
-              <div className="ed-metric__label">Pipeline generated</div>
+              <div className="ed-metric__value"><Counter to={4} suffix="pkg" /></div>
+              <div className="ed-metric__label">Service packages</div>
             </div>
             <div className="ed-metric reveal delay-3">
-              <div className="ed-metric__value"><Counter to={4} />h</div>
-              <div className="ed-metric__label">Response promise</div>
+              <div className="ed-metric__value"><Counter to={4} suffix="h" /></div>
+              <div className="ed-metric__label">Reply promise</div>
             </div>
           </div>
         </div>
@@ -636,13 +636,13 @@ export default function EditorialLanding() {
           <div className="ed-bento__head">
             <span className="eyebrow ed-bento__eyebrow reveal">What we do</span>
             <h2 className="ed-bento__title reveal delay-1">
-              Web, video, marketing &amp; <em>automation</em><br />
+              Web, social, content &amp; <em>growth</em><br />
               under one roof.
             </h2>
             <p className="ed-bento__lede reveal delay-2">
-              We deliver expert digital solutions designed to amplify your
-              growth, from world-class websites and compelling video content
-              to intelligent marketing automation.
+              Six disciplines, one accountable team. Every package combines
+              web development, social media, content production, and a
+              full-stack growth engine — measured on outcomes, not deliverables.
             </p>
           </div>
 
@@ -651,15 +651,15 @@ export default function EditorialLanding() {
               <div>
                 <div className="ed-tile__index">
                   <span>01 / Web Development</span>
-                  <span className="tag">In production</span>
+                  <span className="tag">Engineered</span>
                 </div>
                 <h3 className="ed-tile__h">
                   Websites that <em>convert</em><br />while they sleep.
                 </h3>
                 <p className="ed-tile__p">
-                  Custom-built, performance-tuned sites engineered for speed,
-                  search and revenue. Headless Next.js, conversion-tuned UX,
-                  Lighthouse 100 as a floor.
+                  From a single-page CMS to a full custom CRM. Landing pages,
+                  dynamic CMS builds, custom front-ends &amp; back-ends, and
+                  full migration support — Lighthouse 100 as the floor.
                 </p>
               </div>
               <div className="ed-tile__visual">
@@ -674,78 +674,81 @@ export default function EditorialLanding() {
 
             <article className="ed-tile ed-tile--B reveal delay-1">
               <div className="ed-tile__index">
-                <span>02 / Digital Marketing</span>
-                <span className="tag">Strategic</span>
+                <span>02 / Social Media Management</span>
+                <span className="tag">On-brand</span>
               </div>
               <h3 className="ed-tile__h">
-                Strategy that <em>compounds</em> into pipeline.
+                Brand voice, <em>scaled</em> across every channel.
               </h3>
               <p className="ed-tile__p">
-                SEO, content, paid media, and lifecycle. Measured on revenue,
-                not vanity metrics. Built around your buyer, not the algorithm.
+                3 to 7 posts per week per channel, weekend coverage on Growth+
+                tiers, content strategy, and reporting across up to 6 connected
+                accounts (Instagram, TikTok, LinkedIn, X, Facebook, YouTube).
               </p>
               <div className="ed-tile__chips">
-                <span>SEO</span>
-                <span>Content</span>
-                <span>Paid Media</span>
-                <span>Lifecycle</span>
+                <span>Strategy</span>
+                <span>Calendar</span>
+                <span>Creative</span>
+                <span>Community</span>
               </div>
             </article>
 
             <article className="ed-tile ed-tile--C reveal delay-2">
               <div className="ed-tile__index">
-                <span>03 / Video Production</span>
+                <span>03 / Content Production</span>
                 <span className="tag">Cinematic</span>
               </div>
               <div>
-                <h3 className="ed-tile__h">Compelling content, end-to-end.</h3>
+                <h3 className="ed-tile__h">Story-led content, end-to-end.</h3>
                 <p className="ed-tile__p">
-                  Brand films, product cinematics, and short-form social.
-                  Directed, scored, and colour-graded in-house.
+                  4 to 10+ videos, 2 to 5+ carousels, and single-post graphics
+                  every month. Reels, brand films, product cinematics —
+                  directed, scored, and colour-graded in-house.
                 </p>
               </div>
-              <div className="big">↑ <em>2.4×</em><sup>watch-through</sup></div>
+              <div className="big">↑ <em>10×</em><sup>video / month</sup></div>
             </article>
 
             <article className="ed-tile ed-tile--D reveal delay-3">
               <div className="ed-tile__index">
-                <span>04 / Marketing Automation</span>
-                <span className="tag">Operations</span>
+                <span>04 / Growth Engine</span>
+                <span className="tag">Performance</span>
               </div>
               <h3 className="ed-tile__h">
-                Workflows that <em>quietly run</em> the business.
+                The full <em>acquisition</em> stack, in one team.
               </h3>
               <ul className="ed-tile__list">
-                <li>Lifecycle email &amp; SMS sequencing</li>
-                <li>CRM hygiene + lead routing</li>
-                <li>Multi-channel attribution dashboards</li>
-                <li>Custom integrations &amp; AI agents</li>
+                <li>Email campaigns (1 / week → 2 / week)</li>
+                <li>GEO &amp; SEO programs</li>
+                <li>Meta &amp; Google Ads management</li>
+                <li>Marketing automation &amp; CRM hygiene</li>
               </ul>
             </article>
 
             <article className="ed-tile ed-tile--E reveal delay-2">
               <div className="ed-tile__index">
-                <span>05 / Social Media</span>
-                <span className="tag">On-brand</span>
+                <span>05 / Branding &amp; Copy</span>
+                <span className="tag">Foundational</span>
               </div>
-              <h3 className="ed-tile__h">Brand voice, <em>everywhere.</em></h3>
+              <h3 className="ed-tile__h">Identity that <em>actually</em> ships.</h3>
               <p className="ed-tile__p">
-                Managed social presence across Instagram, TikTok, LinkedIn and
-                more. Strategy, calendar, creative, and community.
+                Branding and rebranding, messaging frameworks, and copywriting
+                across every surface — site, email, ads, social, and decks.
               </p>
             </article>
 
             <article className="ed-tile ed-tile--F reveal delay-3">
               <div className="ed-tile__index">
-                <span>06 / Custom Solutions</span>
+                <span>06 / Lead Generation &amp; Custom</span>
                 <span className="tag">Bespoke</span>
               </div>
               <h3 className="ed-tile__h">
-                Tailored builds for <em>singular businesses.</em>
+                Custom builds for <em>singular businesses.</em>
               </h3>
               <p className="ed-tile__p">
-                Booking systems, e-commerce, internal tooling, SaaS dashboards.
-                Engineered around your workflow, not a template.
+                Lead generation programs, booking systems, e-commerce
+                storefronts, internal tooling, and SaaS dashboards. Engineered
+                around your workflow, not a template.
               </p>
             </article>
           </div>
@@ -1013,45 +1016,48 @@ export default function EditorialLanding() {
             {[
               {
                 tag: "Hospitality",
-                client: "Marée",
-                claim: "Direct bookings overtook OTAs in 4 months.",
-                desc: "We rebuilt the brand site as a booking funnel, then layered SEO + paid media around peak season demand.",
+                client: "M Residences Budapest",
+                url: "https://www.mresidencesbudapest.com/",
+                claim: "Heritage residence with a booking funnel that pays back.",
+                desc: "We rebuilt the brand site as a direct-booking funnel and wired it into a content engine across email, SEO, and social — designed to reduce OTA dependency over the season.",
                 metrics: [
-                  { n: 312, suf: "%", label: "Conversion lift" },
-                  { n: 41, suf: "%", label: "OTA fee reduction" },
-                  { n: 4, suf: ".0×", label: "Direct bookings" },
+                  { n: 7, suf: "ch", label: "Connected channels" },
+                  { n: 4, suf: "+", label: "Posts per week" },
+                  { n: 12, suf: "mo", label: "Engagement plan" },
                 ],
-                before: "$220k",
-                after: "$1.42M",
-                metric: "30-day direct revenue",
+                before: "OTA-led",
+                after: "Direct-led",
+                metric: "Booking strategy",
               },
               {
-                tag: "B2B SaaS",
-                client: "Halcyon & Co.",
-                claim: "MQL pipeline grew 4.6× without raising spend.",
-                desc: "Rebuilt the funnel: positioning → site → SEO + lifecycle. Replaced four tools with one CRM workflow that sales actually uses.",
+                tag: "Capital",
+                client: "MIR Capital",
+                url: "https://www.mir-capital.com/",
+                claim: "Investment firm refresh with editorial-grade design.",
+                desc: "Brand identity refresh, custom Next.js build, and an authority-led content cadence sized for a senior, low-volume, high-trust audience.",
                 metrics: [
-                  { n: 460, suf: "%", label: "Pipeline growth" },
-                  { n: 38, suf: "%", label: "Demo show-rate" },
-                  { n: 22, suf: "d", label: "Avg. sales cycle" },
+                  { n: 100, suf: "%", label: "Custom build" },
+                  { n: 3, suf: "ch", label: "Channels managed" },
+                  { n: 6, suf: "/mo", label: "Long-form pieces" },
                 ],
-                before: "0.9%",
-                after: "4.1%",
-                metric: "Site → demo conversion",
+                before: "Static",
+                after: "Editorial",
+                metric: "Brand positioning",
               },
               {
-                tag: "E-commerce",
-                client: "Atelier 88",
-                claim: "Replatformed and grew AOV 38% in one quarter.",
-                desc: "Custom storefront, content engine for product storytelling, paid social pruned to the segments that actually paid back.",
+                tag: "AI / Tech",
+                client: "BMC AI Services",
+                url: "https://bmcaiservices.britishmediacompany.com/",
+                claim: "Launch site for an AI services suite, ready for scale.",
+                desc: "End-to-end build covering positioning, site engineering, lifecycle automation, and a content studio producing weekly Reels, carousels, and educational explainers.",
                 metrics: [
-                  { n: 38, suf: "%", label: "AOV growth" },
-                  { n: 2, suf: ".7×", label: "Repeat rate" },
-                  { n: 27, suf: "%", label: "Paid CAC drop" },
+                  { n: 10, suf: "+", label: "Videos / month" },
+                  { n: 5, suf: "+", label: "Carousels / month" },
+                  { n: 24, suf: "/7", label: "Automation" },
                 ],
-                before: "1.8%",
-                after: "3.6%",
-                metric: "Add-to-cart rate",
+                before: "Pre-launch",
+                after: "Live engine",
+                metric: "Production cadence",
               },
             ].map((c, i) => (
               <article className="ed-case reveal" style={{ transitionDelay: `${i * 80}ms` }} key={c.client}>
@@ -1064,7 +1070,7 @@ export default function EditorialLanding() {
                     <h3 className="ed-case__client">{c.client}</h3>
                     <p className="ed-case__claim">{c.claim}</p>
                     <p className="ed-case__desc">{c.desc}</p>
-                    <button className="ed-link">Read the case study →</button>
+                    <a className="ed-link" href={c.url} target="_blank" rel="noopener noreferrer">Visit the live site →</a>
                   </div>
                   <div className="ed-case__viz">
                     <div className="ed-case__beforeafter">
@@ -1161,9 +1167,9 @@ export default function EditorialLanding() {
 
           <div className="ed-why__pillars">
             {[
-              { k: "01", t: "Expert team, end-to-end", d: "Web engineers, videographers, marketers, and automation specialists working as one team. No agency-of-agencies overhead." },
-              { k: "02", t: "Performance-driven", d: "Every engagement starts with the metric we will move. Receipts on the wall, dashboards you can see, results you can measure." },
-              { k: "03", t: "Built for any size", d: "From small businesses launching their first site to large brands consolidating ten vendors, engagements scale with you." },
+              { k: "01", t: "Six disciplines, one team", d: "Web engineers, social managers, videographers, copywriters, paid-media specialists, and automation engineers working under one roof. No agency-of-agencies overhead." },
+              { k: "02", t: "Packaged, not bespoke-priced", d: "Four transparent monthly packages from Starter to Enterprise. Upgrade, downsize, or switch any time. No surprise scopes, no hidden hours." },
+              { k: "03", t: "Built for any size", d: "From small businesses launching their first one-page site to multi-brand programs consolidating vendors. The same team, sized to your stage." },
               { k: "04", t: "4-hour response promise", d: "When you need us, you reach a real person fast. Decisions in hours, not weeks. No account-handler theatre." },
             ].map((p, i) => (
               <div className="ed-why__card reveal" style={{ transitionDelay: `${i * 80}ms` }} key={p.k}>
@@ -1431,25 +1437,25 @@ export default function EditorialLanding() {
           <div className="ed-quotes__grid">
             {[
               {
-                q: "The site they shipped is the single best-performing channel we have. Period. We replaced two agencies with PeakPulse and our pipeline is up 4.6×.",
-                n: "Marisol Velasco",
-                r: "Founder, Marée",
+                q: "Strategic, decisive, and fast. PeakPulse runs our site, content, social, and email as one accountable engine — every Monday we know exactly what shipped and what's next.",
+                n: "Founder",
+                r: "Hospitality client",
                 photo: "https://i.pravatar.cc/160?img=47",
-                stat: "+ 460% pipeline",
+                stat: "Replaced 2 agencies",
               },
               {
-                q: "Strategic, decisive, and fast. PeakPulse built us a content engine that finally rates revenue, not traffic, and pruned the channels that never paid back.",
-                n: "Daniel Reyes",
-                r: "CMO, Halcyon & Co.",
+                q: "What we used to manage across four vendors now lives with one team. Web, social, content, and ads moving in lockstep instead of pulling against each other.",
+                n: "Head of Marketing",
+                r: "Capital firm",
                 photo: "https://i.pravatar.cc/160?img=68",
-                stat: "− 41% CAC",
+                stat: "One team, six channels",
               },
               {
-                q: "The team treats our P&L like their own. We get receipts every Monday and have grown for nine straight quarters. They feel like operators, not vendors.",
-                n: "Anna Whitfield",
-                r: "CEO, Atelier 88",
+                q: "PeakPulse treats our brand like operators, not vendors. The cadence is consistent, the work is on-brand, and the receipts arrive every week.",
+                n: "Director",
+                r: "AI services company",
                 photo: "https://i.pravatar.cc/160?img=45",
-                stat: "9 quarters of growth",
+                stat: "Always-on production",
               },
             ].map((t, i) => (
               <figure className="ed-quote reveal" style={{ transitionDelay: `${i * 80}ms` }} key={t.n}>
