@@ -482,7 +482,7 @@ export default function EditorialLanding() {
               <p className="ed-hero__lede reveal delay-3">
                 <strong>PeakPulse Agency</strong> is a performance-driven digital
                 solutions firm delivering web development, social media management,
-                content production, and a full growth engine — all in one
+                content production, and a full growth engine, all in one
                 accountable monthly package.
               </p>
 
@@ -642,7 +642,7 @@ export default function EditorialLanding() {
             <p className="ed-bento__lede reveal delay-2">
               Six disciplines, one accountable team. Every package combines
               web development, social media, content production, and a
-              full-stack growth engine — measured on outcomes, not deliverables.
+              full-stack growth engine. Measured on outcomes, not deliverables.
             </p>
           </div>
 
@@ -659,7 +659,7 @@ export default function EditorialLanding() {
                 <p className="ed-tile__p">
                   From a single-page CMS to a full custom CRM. Landing pages,
                   dynamic CMS builds, custom front-ends &amp; back-ends, and
-                  full migration support — Lighthouse 100 as the floor.
+                  full migration support. Lighthouse 100 as the floor.
                 </p>
               </div>
               <div className="ed-tile__visual">
@@ -702,7 +702,7 @@ export default function EditorialLanding() {
                 <h3 className="ed-tile__h">Story-led content, end-to-end.</h3>
                 <p className="ed-tile__p">
                   4 to 10+ videos, 2 to 5+ carousels, and single-post graphics
-                  every month. Reels, brand films, product cinematics —
+                  every month. Reels, brand films, and product cinematics,
                   directed, scored, and colour-graded in-house.
                 </p>
               </div>
@@ -733,7 +733,7 @@ export default function EditorialLanding() {
               <h3 className="ed-tile__h">Identity that <em>actually</em> ships.</h3>
               <p className="ed-tile__p">
                 Branding and rebranding, messaging frameworks, and copywriting
-                across every surface — site, email, ads, social, and decks.
+                across every surface: site, email, ads, social, and decks.
               </p>
             </article>
 
@@ -1019,7 +1019,7 @@ export default function EditorialLanding() {
                 client: "M Residences Budapest",
                 url: "https://www.mresidencesbudapest.com/",
                 claim: "Heritage residence with a booking funnel that pays back.",
-                desc: "We rebuilt the brand site as a direct-booking funnel and wired it into a content engine across email, SEO, and social — designed to reduce OTA dependency over the season.",
+                desc: "We rebuilt the brand site as a direct-booking funnel and wired it into a content engine across email, SEO, and social, designed to reduce OTA dependency over the season.",
                 metrics: [
                   { n: 7, suf: "ch", label: "Connected channels" },
                   { n: 4, suf: "+", label: "Posts per week" },
@@ -1437,7 +1437,7 @@ export default function EditorialLanding() {
           <div className="ed-quotes__grid">
             {[
               {
-                q: "Strategic, decisive, and fast. PeakPulse runs our site, content, social, and email as one accountable engine — every Monday we know exactly what shipped and what's next.",
+                q: "Strategic, decisive, and fast. PeakPulse runs our site, content, social, and email as one accountable engine. Every Monday we know exactly what shipped and what's next.",
                 n: "Founder",
                 r: "Hospitality client",
                 photo: "https://i.pravatar.cc/160?img=47",
