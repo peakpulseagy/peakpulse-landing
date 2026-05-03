@@ -1182,66 +1182,185 @@ export default function EditorialLanding() {
       <section className="ed-pricing" id="pricing">
         <div className="ed-wrap">
           <div className="ed-pricing__head">
-            <span className="eyebrow reveal">Engage with PeakPulse</span>
+            <span className="eyebrow reveal">Service packages</span>
             <h2 className="ed-pricing__title reveal delay-1">
-              Three ways to <em>start scaling.</em>
+              Four ways to <em>start scaling.</em>
             </h2>
             <p className="ed-pricing__lede reveal delay-2">
-              Pick the engagement model that fits your stage. Upgrade, downsize,
-              or switch any time. No long lock-ins, no hidden fees.
+              Choose the package that fits your stage. Upgrade, downsize, or
+              switch at any time. No long lock-ins, no hidden fees.
             </p>
           </div>
 
           <div className="ed-pricing__grid">
             {[
               {
-                name: "Sprint",
-                price: "$4,800",
-                unit: "from, one-time",
-                desc: "A focused 30-day production sprint. Perfect for launching a new site or shipping a single high-leverage campaign.",
-                features: [
-                  "Site or campaign build",
-                  "Conversion-tuned design",
-                  "Analytics + tracking",
-                  "30-day launch warranty",
-                  "1 director, 1 sprint",
+                name: "Starter",
+                price: "$1,800",
+                unit: "per month",
+                desc: "Foundation package for businesses launching their digital presence.",
+                cta: "Start with Starter",
+                categories: [
+                  {
+                    title: "Web Development",
+                    items: ["Static 1-page CMS site", "1 landing page + branding"],
+                  },
+                  {
+                    title: "Social Media Management",
+                    items: ["3 posts per week", "Content strategy", "3 connected accounts", "Analytics & reporting"],
+                  },
+                  {
+                    title: "Content Production",
+                    items: ["4 videos", "2 carousels", "2 single-post graphics"],
+                  },
+                  {
+                    title: "Growth Engine",
+                    items: [
+                      "1 email campaign / week",
+                      "Foundational GEO & SEO",
+                      "Meta Ads management ¹",
+                      "Google Ads management ¹",
+                      "Copywriting",
+                      "Basic automation",
+                      "Branding / rebranding",
+                    ],
+                  },
                 ],
-                cta: "Start a sprint",
               },
               {
-                name: "Retainer",
-                price: "$8,400",
+                name: "Growth",
+                price: "$2,800",
                 unit: "per month",
-                desc: "An always-on growth team. Site, content, paid, automations. Measured weekly against a single number.",
-                features: [
-                  "Everything in Sprint",
-                  "Ongoing CRO program",
-                  "Content + SEO engine",
-                  "Paid media management",
-                  "Weekly performance review",
-                  "Slack channel access",
-                ],
-                cta: "Book a retainer",
+                desc: "A scaling content engine for businesses ready to compound results.",
                 featured: true,
+                cta: "Choose Growth",
+                categories: [
+                  {
+                    title: "Web Development",
+                    items: ["Static CRM", "CMS with dynamic pages", "Multi-page landing site + 2 brand variants"],
+                  },
+                  {
+                    title: "Social Media Management",
+                    items: ["3 posts per week + weekend content", "Content strategy", "4 connected accounts", "Analytics & reporting"],
+                  },
+                  {
+                    title: "Content Production",
+                    items: ["6 videos", "3 carousels", "3 single-post graphics"],
+                  },
+                  {
+                    title: "Growth Engine",
+                    items: [
+                      "3 email campaigns / fortnight",
+                      "GEO & SEO",
+                      "Meta Ads management ¹",
+                      "Google Ads management ¹",
+                      "Copywriting",
+                      "Intermediate automation",
+                      "Branding / rebranding",
+                    ],
+                  },
+                ],
+              },
+              {
+                name: "Professional",
+                price: "$3,999",
+                unit: "per month",
+                desc: "End-to-end production for established brands and serious operators.",
+                cta: "Go Professional",
+                categories: [
+                  {
+                    title: "Web Development",
+                    items: [
+                      "Custom-built CRM",
+                      "Custom CMS (front-end + back-end)",
+                      "Custom landing pages + branding",
+                      "Migration support",
+                    ],
+                  },
+                  {
+                    title: "Social Media Management",
+                    items: [
+                      "Weekly Reels, carousels & single posts",
+                      "Content strategy",
+                      "Up to 6 connected accounts",
+                      "Analytics & reporting",
+                    ],
+                  },
+                  {
+                    title: "Content Production",
+                    items: ["10 videos", "5 carousels", "5 single-post graphics"],
+                  },
+                  {
+                    title: "Growth Engine",
+                    items: [
+                      "2 email campaigns / week",
+                      "GEO & SEO",
+                      "Meta Ads management ¹",
+                      "Google Ads management ¹",
+                      "Copywriting",
+                      "Advanced automation",
+                      "Branding / rebranding",
+                      "Website management",
+                    ],
+                  },
+                ],
               },
               {
                 name: "Enterprise",
                 price: "Custom",
-                unit: "scoped",
-                desc: "Multi-track engagements for brands consolidating vendors. Bespoke scopes, dedicated team, executive sponsor.",
-                features: [
-                  "Custom team blend",
-                  "Dedicated production lead",
-                  "Custom integrations",
-                  "Quarterly business reviews",
-                  "SLA + priority support",
-                ],
+                unit: "tailored to scope",
+                desc: "Multi-brand, multi-team programs with dedicated leadership and SLA-backed delivery.",
                 cta: "Talk to founders",
+                categories: [
+                  {
+                    title: "Web Development",
+                    items: [
+                      "Full custom CRM build",
+                      "Full custom CMS (front-end + back-end)",
+                      "Unlimited landing pages",
+                      "Custom integrations & migrations",
+                    ],
+                  },
+                  {
+                    title: "Social Media Management",
+                    items: [
+                      "Multi-channel content production",
+                      "Brand-led content calendar",
+                      "Unlimited connected accounts",
+                      "Real-time analytics & reporting",
+                    ],
+                  },
+                  {
+                    title: "Content Production",
+                    items: ["Unlimited content production", "Cinematic brand films", "Photography & graphic design"],
+                  },
+                  {
+                    title: "Growth Engine",
+                    items: [
+                      "Always-on email program",
+                      "Full GEO & SEO program",
+                      "Meta Ads management ¹",
+                      "Google Ads management ¹",
+                      "Copywriting at scale",
+                      "Enterprise automation",
+                      "Lead generation program",
+                    ],
+                  },
+                  {
+                    title: "Partnership",
+                    items: [
+                      "Dedicated account director",
+                      "Quarterly business reviews",
+                      "Priority 4-hour support",
+                      "Service-level agreement",
+                    ],
+                  },
+                ],
               },
             ].map((p, i) => (
               <div
                 className={`ed-price ${p.featured ? "ed-price--featured" : ""} reveal`}
-                style={{ transitionDelay: `${i * 80}ms` }}
+                style={{ transitionDelay: `${i * 70}ms` }}
                 key={p.name}
               >
                 {p.featured && <span className="ed-price__badge">Most popular</span>}
@@ -1251,16 +1370,23 @@ export default function EditorialLanding() {
                   <small>{p.unit}</small>
                 </div>
                 <p className="ed-price__desc">{p.desc}</p>
-                <ul className="ed-price__features">
-                  {p.features.map((f) => (
-                    <li key={f}>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M20 6 9 17l-5-5" />
-                      </svg>
-                      {f}
-                    </li>
+                <div className="ed-price__features">
+                  {p.categories.map((cat) => (
+                    <div className="ed-price__group" key={cat.title}>
+                      <h4 className="ed-price__group-title">{cat.title}</h4>
+                      <ul>
+                        {cat.items.map((item) => (
+                          <li key={item}>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M20 6 9 17l-5-5" />
+                            </svg>
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   ))}
-                </ul>
+                </div>
                 <button
                   className={p.featured ? "ed-cta ed-price__cta" : "ed-price__cta ed-price__cta--ghost"}
                   onClick={openBooking}
@@ -1280,8 +1406,11 @@ export default function EditorialLanding() {
 
           <div className="ed-pricing__foot reveal delay-3">
             <span className="dot" />
-            All engagements include a free growth audit, kickoff workshop, and
-            full transparency on hours &amp; deliverables. <b>30-day exit clause</b> on every retainer.
+            <span>
+              <b>¹</b> Meta &amp; Google Ads management is included; ad spend is billed separately by the platform.
+              All packages include a free growth audit, kickoff workshop, and full transparency on hours &amp; deliverables.
+              <b> 30-day exit clause</b> on every monthly retainer.
+            </span>
           </div>
         </div>
       </section>
