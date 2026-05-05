@@ -2,16 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import Script from "next/script";
 import "./editorial.css";
-
-declare global {
-  interface Window {
-    instgrm?: {
-      Embeds: { process: () => void };
-    };
-  }
-}
 
 /* ──────────────────────────────────────────────
    Reveal-on-scroll
@@ -292,6 +283,85 @@ function instagramEmbedUrl(url: string): string {
   return `https://www.instagram.com/p/${match[1]}/embed`;
 }
 
+/* Branded poster card · click loads the real IG embed in place.
+   Solves the "white card" problem: every card always shows a visible
+   gradient + play button thumbnail, never blank, regardless of whether
+   Instagram's embed.js processes the blockquote in time. */
+function InstagramVideoCard({
+  url,
+  label,
+  sub,
+  index,
+}: {
+  url: string;
+  label: string;
+  sub: string;
+  index: number;
+}) {
+  const [activated, setActivated] = useState(false);
+
+  // Six brand-color poster gradients, cycled by card index for variety
+  const posters = [
+    "linear-gradient(135deg, #FF5C5C 0%, #FF8B5C 100%)",
+    "linear-gradient(135deg, #00D4AA 0%, #0BB89A 100%)",
+    "linear-gradient(135deg, #FF5C5C 0%, #00D4AA 100%)",
+    "linear-gradient(135deg, #FFB050 0%, #FF5C5C 100%)",
+    "linear-gradient(135deg, #0BB89A 0%, #FF8B5C 100%)",
+    "linear-gradient(135deg, #1A2438 0%, #FF8B5C 100%)",
+  ];
+  const poster = posters[index % posters.length];
+
+  return (
+    <div className="ed-pf-reel__card ed-pf-reel__card--ig">
+      <div className="ed-pf-reel__media ed-pf-reel__media--ig">
+        {activated ? (
+          <iframe
+            src={instagramEmbedUrl(url)}
+            allow="autoplay; encrypted-media; fullscreen"
+            title={label}
+            className="ed-pf-reel__iframe"
+            scrolling="no"
+          />
+        ) : (
+          <button
+            type="button"
+            className="ed-pf-reel__poster"
+            style={{ background: poster }}
+            onClick={() => setActivated(true)}
+            aria-label={`Play ${label}`}
+          >
+            <span className="ed-pf-reel__poster-play" aria-hidden>
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </span>
+            <span className="ed-pf-reel__poster-iglogo" aria-hidden>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5" />
+                <circle cx="12" cy="12" r="4" />
+                <circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" />
+              </svg>
+            </span>
+          </button>
+        )}
+      </div>
+      <a
+        className="ed-pf-reel__caption ed-pf-reel__caption--link"
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <span className="ed-pf-reel__num">{String(index + 1).padStart(2, "0")}</span>
+        <div>
+          <b>{label}</b>
+          <small>{sub}</small>
+        </div>
+        <span className="ed-pf-reel__badge ed-pf-reel__badge--ig">@peakpulseagency</span>
+      </a>
+    </div>
+  );
+}
+
 /* ──────────────────────────────────────────────
    Live activity ticker (rotates through booking events)
    ────────────────────────────────────────────── */
@@ -470,18 +540,9 @@ export default function EditorialLanding() {
   const [portfolioMode, setPortfolioMode] = useState<PortfolioMode>("carousel");
   const [pfFilter, setPfFilter] = useState<string>("all");
 
-  // Re-process Instagram embeds whenever the Video reel tab is opened
-  useEffect(() => {
-    if (portfolioMode !== "video") return;
-    const tick = () => window.instgrm?.Embeds?.process();
-    tick();                       // immediate pass
-    const t = setTimeout(tick, 600); // retry once script has settled
-    return () => clearTimeout(t);
-  }, [portfolioMode]);
 
   return (
     <div className="ed-shell">
-      <Script src="https://www.instagram.com/embed.js" strategy="afterInteractive" />
       <div className="ed-metal-shine" aria-hidden />
       <GradientDefs />
       <ScrollProgress />
@@ -894,39 +955,13 @@ export default function EditorialLanding() {
                       </div>
                     </div>
                   ) : (
-                    <div className="ed-pf-reel__card ed-pf-reel__card--ig" key={`ig-${v.url}`}>
-                      <div className="ed-pf-reel__media ed-pf-reel__media--ig">
-                        <blockquote
-                          className="instagram-media"
-                          data-instgrm-permalink={v.url}
-                          data-instgrm-version="14"
-                          style={{
-                            background: "#FFF",
-                            border: 0,
-                            margin: 0,
-                            maxWidth: "100%",
-                            minWidth: "auto",
-                            padding: 0,
-                            width: "100%",
-                          }}
-                        >
-                          <a href={v.url} target="_blank" rel="noopener noreferrer">View on Instagram</a>
-                        </blockquote>
-                      </div>
-                      <a
-                        className="ed-pf-reel__caption ed-pf-reel__caption--link"
-                        href={v.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <span className="ed-pf-reel__num">{String(i + 1).padStart(2, "0")}</span>
-                        <div>
-                          <b>{v.label}</b>
-                          <small>{v.sub}</small>
-                        </div>
-                        <span className="ed-pf-reel__badge ed-pf-reel__badge--ig">@peakpulseagency</span>
-                      </a>
-                    </div>
+                    <InstagramVideoCard
+                      key={`ig-${v.url}`}
+                      url={v.url}
+                      label={v.label}
+                      sub={v.sub}
+                      index={i}
+                    />
                   )
                 )}
               </div>

@@ -3317,48 +3317,124 @@
   overflow: hidden;
 }
 
-/* Instagram embeds — embed.js renders blockquotes into iframes.
-   We let the rendered iframe define its own height (it's responsive),
-   so we only constrain min-height + width. */
+/* Instagram media area — uses 9:16 reel aspect by default,
+   shows a branded poster placeholder until the user clicks play.
+   Once activated, the embed iframe takes over the same area. */
 .ed-pf-reel__media--ig {
-  aspect-ratio: auto;
-  background: #FFF;
-  min-height: 260px;
+  aspect-ratio: 9 / 16;
+  background: var(--surface);
   display: block;
   padding: 0;
   overflow: hidden;
+  position: relative;
 }
 
-.ed-pf-reel__media--ig iframe,
-.ed-pf-reel__media--ig blockquote.instagram-media {
-  position: relative !important;
-  inset: auto !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  min-width: 0 !important;
-  margin: 0 !important;
-  border: 0 !important;
-  display: block !important;
+.ed-pf-reel__media--ig iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+  background: #fff;
 }
 
-/* Hide the placeholder text before embed.js processes the blockquote */
-.ed-pf-reel__media--ig blockquote.instagram-media:not([data-instgrm-payload-id]) {
-  min-height: 480px;
-  background: linear-gradient(135deg, #f4f4f4 0%, #e8e8e8 100%);
-  display: flex !important;
+/* —— Poster placeholder — gradient + play button + IG icon —— */
+.ed-pf-reel__poster {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  cursor: pointer;
+  display: block;
+  overflow: hidden;
+  transition: transform 0.5s var(--ease-luxe);
+}
+
+.ed-pf-reel__poster::before {
+  /* subtle film-grain texture overlay so the gradient doesn't look flat */
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.92' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.4 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  background-size: 220px 220px;
+  opacity: 0.18;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+.ed-pf-reel__poster::after {
+  /* slight darken at the bottom for caption legibility */
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 30%, rgba(0, 0, 0, 0.35) 100%);
+  pointer-events: none;
+}
+
+.ed-pf-reel__card--ig:hover .ed-pf-reel__poster {
+  transform: scale(1.02);
+}
+
+.ed-pf-reel__poster-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.94);
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #555;
-  font-size: 12px;
-  font-family: var(--font-mono);
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+  color: #0A0E16;
+  z-index: 2;
+  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.5);
+  transition: transform 0.4s var(--ease-luxe), box-shadow 0.4s var(--ease-luxe);
 }
 
-.ed-pf-reel__media--ig blockquote.instagram-media:not([data-instgrm-payload-id]) a {
-  color: #555;
-  text-decoration: none;
+.ed-pf-reel__poster-play::before {
+  /* subtle pulsing ring around the play button */
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  animation: ringPulse 2.4s ease-out infinite;
 }
+
+.ed-pf-reel__poster-play svg {
+  width: 26px;
+  height: 26px;
+  margin-left: 4px;
+}
+
+.ed-pf-reel__card--ig:hover .ed-pf-reel__poster-play {
+  transform: translate(-50%, -50%) scale(1.08);
+  box-shadow: 0 22px 56px -10px rgba(0, 0, 0, 0.6);
+}
+
+.ed-pf-reel__poster-iglogo {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  z-index: 2;
+}
+
+.ed-pf-reel__poster-iglogo svg { width: 18px; height: 18px; }
 
 .ed-pf-reel__iframe {
   position: absolute;
