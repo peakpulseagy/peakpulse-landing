@@ -781,11 +781,21 @@
 .ed-hero__dust {
   position: absolute;
   pointer-events: none;
-  z-index: 6;
+  /* Behind the dashboard card. The frame, callouts and text always
+     paint on top of the dust — no leftover particles can ever obscure
+     the card or its content. The dust still glows around the halo. */
+  z-index: 0;
   mix-blend-mode: screen;
   opacity: 1;
   filter: blur(0.3px);
   contain: paint;
+}
+
+/* Dashboard card sits above the canvas */
+.ed-hero__visual .ed-frame--main,
+.ed-hero__visual .ed-callout {
+  position: absolute;
+  z-index: 2;
 }
 
 /* Dashboard is always visible. The canvas overlays only the halo
