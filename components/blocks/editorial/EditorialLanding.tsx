@@ -863,39 +863,31 @@ export default function EditorialLanding() {
                       </div>
                     </div>
                   ) : (
-                    <a
-                      className="ed-pf-reel__card ed-pf-reel__card--ig"
-                      key={`ig-${v.url}`}
-                      href={v.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <div className="ed-pf-reel__media">
-                        <img
-                          className="ed-pf-reel__shot"
-                          src={`https://api.microlink.io/?url=${encodeURIComponent(v.url)}&screenshot=true&meta=false&embed=screenshot.url`}
-                          alt={v.label}
+                    <div className="ed-pf-reel__card ed-pf-reel__card--ig" key={`ig-${v.url}`}>
+                      <div className="ed-pf-reel__media ed-pf-reel__media--ig">
+                        <iframe
+                          src={`${v.url.replace(/\/$/, "")}/embed`}
                           loading="lazy"
-                          onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+                          allow="autoplay; encrypted-media; fullscreen"
+                          title={v.label}
+                          className="ed-pf-reel__iframe"
+                          scrolling="no"
                         />
-                        <span className="ed-pf-reel__iglogo" aria-hidden>
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                            <rect x="2" y="2" width="20" height="20" rx="5" />
-                            <circle cx="12" cy="12" r="4" />
-                            <circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" />
-                          </svg>
-                        </span>
-                        <span className="ed-pf-reel__open" aria-hidden>↗</span>
                       </div>
-                      <div className="ed-pf-reel__caption">
+                      <a
+                        className="ed-pf-reel__caption ed-pf-reel__caption--link"
+                        href={v.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
                         <span className="ed-pf-reel__num">{String(i + 1).padStart(2, "0")}</span>
                         <div>
                           <b>{v.label}</b>
                           <small>{v.sub}</small>
                         </div>
                         <span className="ed-pf-reel__badge ed-pf-reel__badge--ig">@peakpulseagency</span>
-                      </div>
-                    </a>
+                      </a>
+                    </div>
                   )
                 )}
               </div>

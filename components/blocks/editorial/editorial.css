@@ -3317,6 +3317,12 @@
   overflow: hidden;
 }
 
+/* Instagram embeds include caption + footer chrome — need taller aspect */
+.ed-pf-reel__media--ig {
+  aspect-ratio: 9 / 14;
+  background: #000;
+}
+
 .ed-pf-reel__iframe {
   position: absolute;
   inset: 0;
@@ -3396,7 +3402,13 @@
   align-items: center;
   gap: 12px;
   padding: 14px 16px;
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.4s var(--ease-luxe);
 }
+
+.ed-pf-reel__caption--link { cursor: pointer; }
+.ed-pf-reel__caption--link:hover { background: var(--card-hover); }
 
 .ed-pf-reel__num {
   font-family: var(--font-mono);
