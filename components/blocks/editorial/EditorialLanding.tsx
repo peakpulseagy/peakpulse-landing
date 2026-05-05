@@ -255,18 +255,26 @@ function DustReveal({
       innerW: number;
       innerH: number;
     }) => {
-      // Massive density — fine sand grains, tens of thousands of them.
-      // We render via a manually-blended ImageData buffer so this many
-      // particles still hits 60fps. Adaptive: lighter on small screens.
+      // Dense fine sand, but not so dense that converge/disperse looks
+      // like a cloud of stragglers. Each grain has a per-particle alpha
+      // handoff so the field stays clean during transitions.
       const area = innerW * innerH;
       const isMobile = innerW < 600;
       const COUNT = isMobile
-        ? Math.min(22000, Math.round(area / 8))
-        : Math.min(60000, Math.round(area / 4));
+        ? Math.min(8000, Math.round(area / 22))
+        : Math.min(20000, Math.round(area / 14));
 
       const list: Particle[] = [];
-      const cxc = width / 2;
-      const cyc = height / 2;
+
+      // Constrain "home" (dance) positions to a halo around the dashboard
+      // bounds rather than the full canvas. Stops the field from scattering
+      // grains far below or beside the frame, which read as messy.
+      const haloX = Math.min(40, innerW * 0.10);
+      const haloY = Math.min(60, innerH * 0.08);
+      const homeLeft = PAD - haloX;
+      const homeRight = PAD + innerW + haloX;
+      const homeTop = PAD - haloY;
+      const homeBottom = PAD + innerH + haloY;
 
       // Bar heights — sampled from the actual dashboard bars
       const barHeights = [0.32, 0.56, 0.44, 0.78, 0.64, 0.92, 1.0];
@@ -319,11 +327,10 @@ function DustReveal({
           ty = PAD + innerH * (0.30 + Math.random() * 0.16);
         }
 
-        // Home (dance) position: scattered around canvas center
-        const ang = Math.random() * Math.PI * 2;
-        const rr = Math.min(width, height) * (0.20 + Math.random() * 0.50);
-        const hx = cxc + Math.cos(ang) * rr;
-        const hy = cyc + Math.sin(ang) * rr * 0.85;
+        // Home (dance) position: random point inside the dashboard halo,
+        // not the whole canvas. Keeps the dance contained and tidy.
+        const hx = homeLeft + Math.random() * (homeRight - homeLeft);
+        const hy = homeTop + Math.random() * (homeBottom - homeTop);
 
         // Each grain carries a baseline position in the gradient palette
         // computed from a diagonal so neighbouring grains sample similar
@@ -335,10 +342,10 @@ function DustReveal({
           ty,
           hx,
           hy,
-          hAmp: 12 + Math.random() * 30,
+          hAmp: 6 + Math.random() * 18, // smaller dance — calmer, less dispersion
           seed: Math.random(),
           gradPos: diag + (Math.random() - 0.5) * 0.04,
-          stagger: Math.random() * 0.20,
+          stagger: Math.random() * 0.18,
         });
       }
       return list;
@@ -445,12 +452,18 @@ function DustReveal({
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
 
-        // Compute position for this phase
+        // Compute position for this phase + per-grain alpha handoff.
+        // pAlpha = 1 means the grain is fully visible at its current
+        // position; 0 means it's hidden. This is how we keep transitions
+        // tidy: a grain that has reached its target fades out while the
+        // dashboard pixels take over, and a grain that hasn't left yet
+        // during disperse stays hidden until it actually moves.
         const wx = p.hx + waveX(p, time);
         const wy = p.hy + waveY(p, time);
 
         let px: number;
         let py: number;
+        let pAlpha = 1;
 
         if (phase === "dance") {
           px = wx;
@@ -460,12 +473,19 @@ function DustReveal({
           const e = s <= 0 ? 0 : s >= 1 ? 1 : easeInOut(s);
           px = wx + (p.tx - wx) * e;
           py = wy + (p.ty - wy) * e;
+          // Fade out as the grain reaches target — clean handoff
+          pAlpha = 1 - e;
         } else {
           const s = (phaseT - p.stagger) / (1 - p.stagger);
           const e = s <= 0 ? 0 : s >= 1 ? 1 : easeInOut(s);
           px = p.tx + (wx - p.tx) * e;
           py = p.ty + (wy - p.ty) * e;
+          // Fade in as the grain leaves target
+          pAlpha = e;
         }
+
+        const a = alphaMul * pAlpha;
+        if (a < 0.01) continue;
 
         // Sample the moving gradient
         let gp = (p.gradPos + gradOffset) % 1;
@@ -481,12 +501,11 @@ function DustReveal({
         if (x < 0 || x >= W || y < 0 || y >= H) continue;
 
         // Manual additive blend so dense overlaps glow softly.
-        // Multiply colour by alphaMul and clamp.
         const off = (y * W + x) << 2;
-        const ar = (r * alphaMul) | 0;
-        const ag = (g * alphaMul) | 0;
-        const ab = (b * alphaMul) | 0;
-        const aa = (255 * alphaMul) | 0;
+        const ar = (r * a) | 0;
+        const ag = (g * a) | 0;
+        const ab = (b * a) | 0;
+        const aa = (255 * a) | 0;
 
         const v0 = data[off] + ar;
         const v1 = data[off + 1] + ag;
