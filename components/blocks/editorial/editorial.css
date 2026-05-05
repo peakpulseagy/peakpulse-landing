@@ -798,6 +798,28 @@
   z-index: 2;
 }
 
+/* Force fully opaque base on the dashboard card + callouts and kill
+   backdrop-filter while the dust canvas is behind. Otherwise --surface
+   (rgba(255,255,255,0.025)) and --card (rgba(255,255,255,0.07)) leave
+   the gradient translucent at the corners and the dust bleeds through
+   the glass effect. With this override the card is guaranteed opaque
+   on top of the dust, and the text reads completely clean. */
+.ed-hero__visual--dust .ed-frame--main {
+  background:
+    radial-gradient(120% 80% at 60% 20%, rgba(0, 212, 170, 0.18) 0%, transparent 55%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.04) 0%, transparent 70%),
+    var(--card-solid);
+  background-color: var(--card-solid);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.ed-hero__visual--dust .ed-callout {
+  background-color: var(--card-solid);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
 /* Dashboard is always visible. The canvas overlays only the halo
    ring around it; pixels that would land on the frame are clipped
    in JS so the card and its text stay crystal clear at all times. */
