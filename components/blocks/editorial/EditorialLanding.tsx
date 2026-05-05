@@ -122,6 +122,222 @@ function ScrollProgress() {
 }
 
 /* ──────────────────────────────────────────────
+   Dust-converge reveal for the hero dashboard.
+   Renders a canvas overlay that spawns ~thousands of dust
+   particles scattered around the dashboard, then drives them
+   along eased curves to their target pixel positions sampled
+   from the dashboard outline. As particles arrive, the canvas
+   fades out and the real dashboard reveals beneath. Same
+   "broken pieces converging" feel as the logo intro.
+   ────────────────────────────────────────────── */
+function DustReveal({
+  targetRef,
+}: {
+  targetRef: React.RefObject<HTMLDivElement | null>;
+}) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const target = targetRef.current;
+    if (!canvas || !target) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) {
+      setDone(true);
+      return;
+    }
+
+    const ctx = canvas.getContext("2d", { alpha: true });
+    if (!ctx) return;
+
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    let raf = 0;
+    let running = false;
+
+    type Particle = {
+      x: number;
+      y: number;
+      tx: number;
+      ty: number;
+      sx: number;
+      sy: number;
+      hue: number;
+      size: number;
+      life: number;
+      delay: number;
+    };
+    let particles: Particle[] = [];
+    let startedAt = 0;
+    const DURATION = 2400; // ms
+
+    const sizeCanvas = () => {
+      const r = target.getBoundingClientRect();
+      const pad = 80; // particles can fly in from outside the dashboard bounds
+      canvas.width = (r.width + pad * 2) * dpr;
+      canvas.height = (r.height + pad * 2) * dpr;
+      canvas.style.width = `${r.width + pad * 2}px`;
+      canvas.style.height = `${r.height + pad * 2}px`;
+      canvas.style.left = `${-pad}px`;
+      canvas.style.top = `${-pad}px`;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      return { width: r.width + pad * 2, height: r.height + pad * 2, pad };
+    };
+
+    const seedParticles = ({
+      width,
+      height,
+      pad,
+    }: {
+      width: number;
+      height: number;
+      pad: number;
+    }) => {
+      // Sample target positions on a dense grid that maps to the dashboard area.
+      // Edges + key chart bars are weighted heavier so the convergence reads
+      // as the dashboard outline forming.
+      const innerW = width - pad * 2;
+      const innerH = height - pad * 2;
+      const cols = 56;
+      const rows = 70;
+      const cellW = innerW / cols;
+      const cellH = innerH / rows;
+      const list: Particle[] = [];
+
+      for (let cy = 0; cy < rows; cy++) {
+        for (let cx = 0; cx < cols; cx++) {
+          // Jitter target slightly within cell so it doesn't feel grid-y
+          const tx = pad + cx * cellW + (Math.random() - 0.5) * cellW * 0.7;
+          const ty = pad + cy * cellH + (Math.random() - 0.5) * cellH * 0.7;
+
+          // Drop ~55% of inner cells; keep edges, top chrome, and bottom rows for outline emphasis
+          const onEdge = cx < 2 || cx > cols - 3 || cy < 4 || cy > rows - 3;
+          const onChartBand = cy > rows * 0.55 && cy < rows * 0.85;
+          if (!onEdge && !onChartBand && Math.random() > 0.45) continue;
+
+          // Scatter origin: random direction, large radius from canvas center
+          const cxc = width / 2;
+          const cyc = height / 2;
+          const ang = Math.random() * Math.PI * 2;
+          const radius = Math.max(width, height) * (0.55 + Math.random() * 0.7);
+          const sx = cxc + Math.cos(ang) * radius;
+          const sy = cyc + Math.sin(ang) * radius;
+
+          // 60% white dust, 25% teal, 15% coral
+          const r = Math.random();
+          const hue = r < 0.6 ? 0 : r < 0.85 ? 165 : 4;
+
+          list.push({
+            x: sx,
+            y: sy,
+            sx,
+            sy,
+            tx,
+            ty,
+            hue,
+            size: 0.6 + Math.random() * 1.6,
+            life: 0,
+            delay: Math.random() * 0.35, // 0..0.35 of duration
+          });
+        }
+      }
+      return list;
+    };
+
+    const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
+
+    const draw = (now: number) => {
+      const t = (now - startedAt) / DURATION; // 0..1
+      const w = canvas.width / dpr;
+      const h = canvas.height / dpr;
+      ctx.clearRect(0, 0, w, h);
+
+      let arrived = 0;
+      ctx.globalCompositeOperation = "lighter";
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        // Per-particle progress with delay, clamped 0..1
+        const local = Math.max(0, Math.min(1, (t - p.delay) / (1 - p.delay)));
+        const e = easeOut(local);
+        p.x = p.sx + (p.tx - p.sx) * e;
+        p.y = p.sy + (p.ty - p.sy) * e;
+
+        // Fade in early, fade out as we settle so they "dissolve" into the frame
+        const fadeIn = Math.min(1, local * 4);
+        const fadeOut = Math.max(0, 1 - Math.max(0, (local - 0.7) / 0.3));
+        const alpha = fadeIn * fadeOut;
+        if (alpha <= 0.01) {
+          if (local >= 1) arrived++;
+          continue;
+        }
+
+        let fill: string;
+        if (p.hue === 0) fill = `rgba(255, 255, 255, ${alpha * 0.95})`;
+        else if (p.hue === 165) fill = `rgba(0, 212, 170, ${alpha * 0.85})`;
+        else fill = `rgba(255, 92, 92, ${alpha * 0.85})`;
+
+        ctx.beginPath();
+        ctx.fillStyle = fill;
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+        if (local >= 1) arrived++;
+      }
+      ctx.globalCompositeOperation = "source-over";
+
+      if (t < 1.05) {
+        raf = requestAnimationFrame(draw);
+      } else {
+        running = false;
+        setDone(true);
+      }
+    };
+
+    const start = () => {
+      if (running) return;
+      const dims = sizeCanvas();
+      particles = seedParticles(dims);
+      startedAt = performance.now();
+      running = true;
+      raf = requestAnimationFrame(draw);
+    };
+
+    // Trigger when the visual enters the viewport (keeps SSR/hydration happy)
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            io.disconnect();
+            start();
+          }
+        });
+      },
+      { threshold: 0.15 }
+    );
+    io.observe(target);
+
+    const onResize = () => {
+      if (!running) return;
+      sizeCanvas();
+    };
+    window.addEventListener("resize", onResize);
+
+    return () => {
+      io.disconnect();
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", onResize);
+    };
+  }, [targetRef]);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className={`ed-hero__dust ${done ? "is-done" : ""}`}
+      aria-hidden
+    />
+  );
+}
+
+/* ──────────────────────────────────────────────
    Tilt-on-hover hero visual
    ────────────────────────────────────────────── */
 function useTilt(ref: React.RefObject<HTMLElement | null>) {
@@ -612,7 +828,8 @@ export default function EditorialLanding() {
           </div>
 
           {/* Hero visual stack */}
-          <div className="ed-hero__visual reveal delay-2" ref={heroVisualRef}>
+          <div className="ed-hero__visual ed-hero__visual--dust reveal delay-2" ref={heroVisualRef}>
+            <DustReveal targetRef={heroVisualRef} />
             <div className="ed-frame ed-frame--back" aria-hidden />
             <div className="ed-frame ed-frame--main">
               <div className="ed-frame__chrome">

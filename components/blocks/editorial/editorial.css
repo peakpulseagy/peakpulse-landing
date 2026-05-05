@@ -774,6 +774,58 @@
   }
 }
 
+/* ── Dust converge reveal: canvas particle field overlaid on the hero
+   dashboard. Plays once when the visual enters the viewport, then fades
+   itself out so the dashboard reads cleanly. ── */
+.ed-hero__dust {
+  position: absolute;
+  pointer-events: none;
+  z-index: 6;
+  mix-blend-mode: screen;
+  opacity: 1;
+  transition: opacity 0.7s var(--ease-luxe);
+}
+
+.ed-hero__dust.is-done {
+  opacity: 0;
+}
+
+/* While the dust is converging, the actual dashboard frames + callouts
+   fade in from a heavy blur + scaled-up state, mirroring the same
+   "broken pieces forming" feel as the logo intro. */
+.ed-hero__visual--dust .ed-frame--main,
+.ed-hero__visual--dust .ed-frame--back,
+.ed-hero__visual--dust .ed-callout {
+  opacity: 0;
+  filter: blur(28px) saturate(0.4);
+  transform: scale(1.08);
+  animation: dashboardConverge 2.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.ed-hero__visual--dust .ed-frame--back   { animation-delay: 0.10s; }
+.ed-hero__visual--dust .ed-frame--main   { animation-delay: 0.25s; }
+.ed-hero__visual--dust .ed-callout--top  { animation-delay: 1.05s; }
+.ed-hero__visual--dust .ed-callout--bottom { animation-delay: 1.25s; }
+
+@keyframes dashboardConverge {
+  0%   { opacity: 0;    filter: blur(28px) saturate(0.4); transform: scale(1.08); }
+  35%  { opacity: 0.35; filter: blur(14px) saturate(0.6); transform: scale(1.045); }
+  70%  { opacity: 0.85; filter: blur(3px)  saturate(0.95); transform: scale(1.01); }
+  100% { opacity: 1;    filter: blur(0)    saturate(1);   transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ed-hero__visual--dust .ed-frame--main,
+  .ed-hero__visual--dust .ed-frame--back,
+  .ed-hero__visual--dust .ed-callout {
+    opacity: 1;
+    filter: none;
+    transform: none;
+    animation: none;
+  }
+  .ed-hero__dust { display: none; }
+}
+
 .ed-frame {
   position: absolute;
   border-radius: 18px;
