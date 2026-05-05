@@ -774,84 +774,91 @@
   }
 }
 
-/* ── Sand-wave dust reveal canvas. The canvas sits over the hero
-   visual; the dashboard frames + callouts read --reveal/--reveal-blur/
-   --reveal-scale variables that the canvas updates each frame, so they
-   fade in/out perfectly in sync with the looping sand cycle. ── */
-.ed-hero__dust {
+/* ── Aurora glow + border trace for the hero dashboard.
+   Pure CSS, works everywhere, never obscures the card or its text.
+   Two layers:
+     1. .ed-hero__aurora — soft teal+coral gradient blobs that breathe
+        and slowly orbit behind the card, giving the visual stack
+        a luminous, premium "live" feel
+     2. .ed-frame--main::before — a thin conic light beam that
+        traces the card's border once every 6s
+*/
+.ed-hero__aurora {
   position: absolute;
-  pointer-events: none;
-  /* Behind the dashboard card. The frame, callouts and text always
-     paint on top of the dust — no leftover particles can ever obscure
-     the card or its content. The dust still glows around the halo. */
+  inset: -60px -50px -50px -60px;
   z-index: 0;
-  mix-blend-mode: screen;
-  opacity: 1;
-  filter: blur(0.3px);
-  contain: paint;
+  pointer-events: none;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 28% 26%, rgba(0, 212, 170, 0.55), transparent 50%),
+    radial-gradient(circle at 76% 78%, rgba(255, 92, 92, 0.42), transparent 52%),
+    radial-gradient(circle at 60% 18%, rgba(120, 180, 240, 0.30), transparent 55%);
+  filter: blur(46px) saturate(140%);
+  opacity: 0.85;
+  animation: auroraDrift 14s ease-in-out infinite;
 }
 
-/* Dashboard card sits above the canvas */
+@keyframes auroraDrift {
+  0%, 100% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+    opacity: 0.85;
+  }
+  35% {
+    transform: translate(14px, -10px) scale(1.06) rotate(8deg);
+    opacity: 1;
+  }
+  65% {
+    transform: translate(-12px, 14px) scale(1.03) rotate(-6deg);
+    opacity: 0.9;
+  }
+}
+
+/* Dashboard card sits above the aurora */
 .ed-hero__visual .ed-frame--main,
 .ed-hero__visual .ed-callout {
   position: absolute;
   z-index: 2;
 }
 
-/* Force fully opaque base on the dashboard card + callouts and kill
-   backdrop-filter while the dust canvas is behind. Otherwise --surface
-   (rgba(255,255,255,0.025)) and --card (rgba(255,255,255,0.07)) leave
-   the gradient translucent at the corners and the dust bleeds through
-   the glass effect. With this override the card is guaranteed opaque
-   on top of the dust, and the text reads completely clean. */
-.ed-hero__visual--dust .ed-frame--main {
-  background:
-    radial-gradient(120% 80% at 60% 20%, rgba(0, 212, 170, 0.18) 0%, transparent 55%),
-    linear-gradient(160deg, rgba(255, 255, 255, 0.04) 0%, transparent 70%),
-    var(--card-solid);
-  background-color: var(--card-solid);
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
+/* Border-tracing light beam on the main card */
+.ed-frame--main {
+  position: relative;
 }
 
-.ed-hero__visual--dust .ed-callout {
-  background-color: var(--card-solid);
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
+.ed-frame--main::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    transparent 240deg,
+    rgba(0, 212, 170, 0.85) 290deg,
+    rgba(255, 255, 255, 0.95) 320deg,
+    rgba(255, 92, 92, 0.85) 350deg,
+    transparent 360deg
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0.65;
+  animation: borderTrace 6s linear infinite;
 }
 
-/* Dashboard is always visible. The canvas overlays only the halo
-   ring around it; pixels that would land on the frame are clipped
-   in JS so the card and its text stay crystal clear at all times. */
-.ed-hero__visual--dust {
-  --reveal: 1;
-  --reveal-blur: 0px;
-  --reveal-scale: 1;
-}
-
-.ed-hero__visual--dust .ed-frame--main,
-.ed-hero__visual--dust .ed-callout {
-  opacity: var(--reveal);
-  filter: blur(var(--reveal-blur));
-  transform: scale(var(--reveal-scale));
-  will-change: opacity, filter, transform;
-}
-
-/* Back frame keeps its 4deg tilt; combine with reveal scale */
-.ed-hero__visual--dust .ed-frame--back {
-  opacity: calc(var(--reveal) * 0.85);
-  filter: blur(var(--reveal-blur));
-  transform: rotate(4deg) scale(var(--reveal-scale));
-  will-change: opacity, filter, transform;
+@keyframes borderTrace {
+  to { transform: rotate(360deg); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ed-hero__visual--dust {
-    --reveal: 1;
-    --reveal-blur: 0px;
-    --reveal-scale: 1;
+  .ed-hero__aurora,
+  .ed-frame--main::before {
+    animation: none;
   }
-  .ed-hero__dust { display: none; }
 }
 
 .ed-frame {
