@@ -304,6 +304,47 @@ function LiveTicker() {
    ────────────────────────────────────────────── */
 type PortfolioMode = "video" | "carousel" | "magazine";
 
+/* Video reel content — Drive videos play inline, Instagram links open in a new tab */
+type ReelVideo =
+  | { type: "drive";     id: string; label: string; sub: string }
+  | { type: "instagram"; url: string; label: string; sub: string };
+
+const reelVideos: ReelVideo[] = [
+  // Google Drive — cinematic in-house edits, play inline
+  { type: "drive",     id: "1-sJt5qVJJzFUfPVGqMe_qzqqRuj8BoYw", label: "Cinematic edit",  sub: "Brand film · in-house" },
+  { type: "drive",     id: "1zgqIwtwt9iS9W-czdaqhNmU5ZsE75-_Y", label: "Brand cut",       sub: "Product cinematic"   },
+  { type: "drive",     id: "1ETswj63OoENx8h-aUJajzq0nB1enzRaL", label: "Campaign cut",    sub: "Story-led narrative" },
+  { type: "drive",     id: "1vXGjatdPn55_IpuUTTBhF-OvAp8DJjyj", label: "Founder story",   sub: "Documentary"         },
+  { type: "drive",     id: "1dUna087dq8INuIAINoUPFpwwRHNyDFkj", label: "Launch reel",     sub: "Cinematic"           },
+  { type: "drive",     id: "1_rFjz7dsH2cAXORTXddWW9NXtslx8Ox2", label: "Anthem film",     sub: "Brand film"          },
+
+  // Instagram — Reels & posts published on @peakpulseagency
+  { type: "instagram", url: "https://www.instagram.com/p/DXaReSRjPnJ/",     label: "Spotlight",       sub: "IG Post"  },
+  { type: "instagram", url: "https://www.instagram.com/p/DXaRA3nit5s/",     label: "Editorial drop",  sub: "IG Post"  },
+  { type: "instagram", url: "https://www.instagram.com/p/DXaQQ9dDuSc/",     label: "Brand frame",     sub: "IG Post"  },
+  { type: "instagram", url: "https://www.instagram.com/p/DXY7O_-iR3W/",     label: "Studio cut",      sub: "IG Post"  },
+  { type: "instagram", url: "https://www.instagram.com/p/DW3bak8DKi_/",     label: "Field journal",   sub: "IG Post"  },
+  { type: "instagram", url: "https://www.instagram.com/reels/C-BX97cixTi/", label: "Reel · client",   sub: "IG Reel"  },
+  { type: "instagram", url: "https://www.instagram.com/reels/C9ULz54SmaX/", label: "Reel · launch",   sub: "IG Reel"  },
+  { type: "instagram", url: "https://www.instagram.com/reels/C9b61BASC89/", label: "Reel · campaign", sub: "IG Reel"  },
+  { type: "instagram", url: "https://www.instagram.com/reels/C8_VS-byODA/", label: "Reel · story",    sub: "IG Reel"  },
+  { type: "instagram", url: "https://www.instagram.com/reels/C85jZZVS6oJ/", label: "Reel · product",  sub: "IG Reel"  },
+  { type: "instagram", url: "https://www.instagram.com/reels/C8taOdCSlLV/", label: "Reel · brand",    sub: "IG Reel"  },
+  { type: "instagram", url: "https://www.instagram.com/reels/DWk19Gmj9uS/", label: "Reel · cut",      sub: "IG Reel"  },
+  { type: "instagram", url: "https://www.instagram.com/reel/DTMNv41D-w1/",  label: "Reel · short",    sub: "IG Reel"  },
+  { type: "instagram", url: "https://www.instagram.com/reel/DS66BwbgPJK/",  label: "Reel · edit",     sub: "IG Reel"  },
+  { type: "instagram", url: "https://www.instagram.com/reels/DSJvyvoCIlH/", label: "Reel · feature",  sub: "IG Reel"  },
+  { type: "instagram", url: "https://www.instagram.com/reels/DQL0GOUjdx5/", label: "Reel · drop",     sub: "IG Reel"  },
+  { type: "instagram", url: "https://www.instagram.com/reel/DXrSRFvEkeL/",  label: "Reel · spotlight",sub: "IG Reel"  },
+  { type: "instagram", url: "https://www.instagram.com/reel/DXMb0cJADAX/",  label: "Reel · feature",  sub: "IG Reel"  },
+  { type: "instagram", url: "https://www.instagram.com/reel/DXKPWm2Dny5/",  label: "Reel · journal",  sub: "IG Reel"  },
+  { type: "instagram", url: "https://www.instagram.com/reel/DXEsuPegHZy/",  label: "Reel · series",   sub: "IG Reel"  },
+  { type: "instagram", url: "https://www.instagram.com/reel/DVbT69OCePE/",  label: "Reel · campaign", sub: "IG Reel"  },
+  { type: "instagram", url: "https://www.instagram.com/reel/DUMBy9HEag8/",  label: "Reel · brand",    sub: "IG Reel"  },
+  { type: "instagram", url: "https://www.instagram.com/reel/DTgZsKSFSYD/",  label: "Reel · launch",   sub: "IG Reel"  },
+  { type: "instagram", url: "https://www.instagram.com/reel/DSlOJszE8zH/",  label: "Reel · cut",      sub: "IG Reel"  },
+];
+
 /* Filter categories shown above the website grid */
 const portfolioCategories = [
   { id: "all",      label: "All work" },
@@ -788,51 +829,76 @@ export default function EditorialLanding() {
 
           {/* === VIDEO REEL === */}
           {portfolioMode === "video" && (
-            <div className="ed-pf-video ed-pf-enter" key="video">
-              <div className="ed-pf-video__main">
-                <div className="ed-pf-video__chrome">
+            <div className="ed-pf-reel ed-pf-enter" key="video">
+              <div className="ed-pf-reel__intro">
+                <span className="ed-pf-reel__label">
                   <span className="rec" />
-                  <span className="lbl">REEL · 02:14</span>
-                  <span className="hd">4K · 60FPS</span>
-                </div>
-                <div className="ed-pf-video__stage">
-                  <div className="ed-pf-video__waveform" aria-hidden>
-                    {Array.from({ length: 40 }).map((_, j) => (
-                      <span key={j} style={{ animationDelay: `${j * 60}ms` }} />
-                    ))}
-                  </div>
-                  <div className="ed-pf-video__caption">
-                    <span className="ticker">
-                      <i>•</i> Now playing
-                    </span>
-                    <h3>BMC AI Services · The Launch</h3>
-                    <p>Brand film · Direction, score, and colour grade in-house</p>
-                  </div>
-                  <button className="ed-pf-video__play" aria-label="Play reel">
-                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
-                  </button>
-                </div>
-                <div className="ed-pf-video__meta">
-                  <span><b>312%</b> conversion lift</span>
-                  <span><b>2.4×</b> watch-through</span>
-                  <span><b>9</b> awards</span>
-                </div>
+                  Live reel · {reelVideos.length} pieces
+                </span>
+                <p>
+                  A live selection of cinematic edits and short-form social content produced
+                  in-house. Direction, score, colour grade, and edit all under one roof.
+                </p>
               </div>
-              <ul className="ed-pf-video__list">
-                {[
-                  { t: "02:14", n: "BMC AI Services · Launch Reel",       c: "Brand film",   u: "https://bmcaiservices.britishmediacompany.com/" },
-                  { t: "01:48", n: "Berkeley Travel · The Concierge Cut", c: "Brand film",   u: "https://berkeleytravel.co.uk/" },
-                ].map((v) => (
-                  <li key={v.n} onClick={() => window.open(v.u, "_blank")}>
-                    <span className="t">{v.t}</span>
-                    <div>
-                      <b>{v.n}</b>
-                      <small>{v.c}</small>
+              <div className="ed-pf-reel__grid">
+                {reelVideos.map((v, i) =>
+                  v.type === "drive" ? (
+                    <div className="ed-pf-reel__card" key={`drive-${v.id}`}>
+                      <div className="ed-pf-reel__media">
+                        <iframe
+                          src={`https://drive.google.com/file/d/${v.id}/preview`}
+                          allow="autoplay"
+                          loading="lazy"
+                          title={v.label}
+                          className="ed-pf-reel__iframe"
+                        />
+                      </div>
+                      <div className="ed-pf-reel__caption">
+                        <span className="ed-pf-reel__num">{String(i + 1).padStart(2, "0")}</span>
+                        <div>
+                          <b>{v.label}</b>
+                          <small>{v.sub}</small>
+                        </div>
+                        <span className="ed-pf-reel__badge ed-pf-reel__badge--drive">In-house</span>
+                      </div>
                     </div>
-                    <span className="more" aria-hidden>↗</span>
-                  </li>
-                ))}
-              </ul>
+                  ) : (
+                    <a
+                      className="ed-pf-reel__card ed-pf-reel__card--ig"
+                      key={`ig-${v.url}`}
+                      href={v.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <div className="ed-pf-reel__media">
+                        <img
+                          className="ed-pf-reel__shot"
+                          src={`https://api.microlink.io/?url=${encodeURIComponent(v.url)}&screenshot=true&meta=false&embed=screenshot.url`}
+                          alt={v.label}
+                          loading="lazy"
+                          onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+                        />
+                        <span className="ed-pf-reel__iglogo" aria-hidden>
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                            <rect x="2" y="2" width="20" height="20" rx="5" />
+                            <circle cx="12" cy="12" r="4" />
+                            <circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" />
+                          </svg>
+                        </span>
+                        <span className="ed-pf-reel__open" aria-hidden>↗</span>
+                      </div>
+                      <div className="ed-pf-reel__caption">
+                        <span className="ed-pf-reel__num">{String(i + 1).padStart(2, "0")}</span>
+                        <div>
+                          <b>{v.label}</b>
+                          <small>{v.sub}</small>
+                        </div>
+                        <span className="ed-pf-reel__badge ed-pf-reel__badge--ig">@peakpulseagency</span>
+                      </div>
+                    </a>
+                  )
+                )}
+              </div>
             </div>
           )}
 
@@ -919,19 +985,30 @@ export default function EditorialLanding() {
               </article>
               <div className="ed-pf-mag__side">
                 {[
-                  { kicker: "Capital", title: "S.W. Mitchell Capital · refreshed identity",   read: "5 min", url: "https://www.swmitchellcapital.com/" },
-                  { kicker: "AI",      title: "BMC AI Services · building an AI suite site", read: "8 min", url: "https://bmcaiservices.britishmediacompany.com/" },
+                  { kicker: "Studio · Volume 01", title: "Editorial deck · Volume 01", read: "Open in Canva", id: "DAG5CrRWpwU", token: "6U6CnwYl0Aoge-QpGLrgug", url: "https://canva.link/kr7qjl00h7tp3ne" },
+                  { kicker: "Studio · Volume 02", title: "Editorial deck · Volume 02", read: "Open in Canva", id: "DAG5CJGBKfU", token: "hvvntRKNAZ84sI7DMYP8Ug", url: "https://canva.link/91xbzay0yovn7h9" },
+                  { kicker: "Studio · Volume 03", title: "Editorial deck · Volume 03", read: "Open in Canva", id: "DAGZqRbWGf0", token: "IVv6bF79BN5BrMVmrC624w", url: "https://canva.link/6pzd3yed1xuz528" },
+                  { kicker: "Studio · Volume 04", title: "Editorial deck · Volume 04", read: "Open in Canva", id: "DAG5CDbckrw", token: "CsbaCrkXKrtlcavGiiQscQ", url: "https://canva.link/hr2t94jl7d7h2s3" },
                 ].map((m) => (
-                  <article
-                    className="ed-pf-mag__story"
-                    key={m.title}
-                    onClick={() => window.open(m.url, "_blank")}
-                    role="link"
-                    tabIndex={0}
-                  >
-                    <span className="ed-pf-mag__kicker">{m.kicker}</span>
-                    <h4>{m.title}</h4>
-                    <span className="ed-pf-mag__read">{m.read}</span>
+                  <article className="ed-pf-mag__story" key={m.title}>
+                    <div className="ed-pf-mag__embed">
+                      <iframe
+                        src={`https://www.canva.com/design/${m.id}/${m.token}/view?embed&autoplay=true&loop=true&hideUI=true`}
+                        loading="lazy"
+                        allow="autoplay; fullscreen"
+                        title={m.title}
+                      />
+                    </div>
+                    <a
+                      className="ed-pf-mag__story-meta"
+                      href={m.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <span className="ed-pf-mag__kicker">{m.kicker}</span>
+                      <h4>{m.title}</h4>
+                      <span className="ed-pf-mag__read">{m.read} ↗</span>
+                    </a>
                   </article>
                 ))}
               </div>
