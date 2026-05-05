@@ -2644,9 +2644,9 @@
 
 .ed-trust__marquee .ed-trust__logos {
   display: flex;
-  gap: 18px;
+  gap: 56px;
   margin: 0;
-  padding: 0 14px;
+  padding: 0 28px;
   list-style: none;
   flex-shrink: 0;
   align-items: center;
@@ -2656,43 +2656,42 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 60px;
-  padding: 10px 20px;
+  height: 52px;
   flex-shrink: 0;
-  background: rgba(255, 255, 255, 0.96);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 10px;
-  box-shadow: 0 4px 14px -4px rgba(0, 0, 0, 0.4);
-  transition: transform 0.35s var(--ease-luxe), box-shadow 0.35s var(--ease-luxe);
+  opacity: 0.92;
+  transition: opacity 0.35s var(--ease-luxe), transform 0.35s var(--ease-luxe);
 }
 
 .ed-trust__marquee .ed-trust__logos li:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 22px -4px rgba(0, 0, 0, 0.5);
+  opacity: 1;
+  transform: scale(1.06);
 }
 
 .ed-trust__marquee .ed-trust__logos li img {
   max-height: 100%;
-  max-width: 140px;
+  max-width: 170px;
   width: auto;
   height: auto;
   object-fit: contain;
   display: block;
 }
 
+/* Dark/black logos that wouldn't read on the deep-black background:
+   convert just those to solid white via filter so the wordmark stays
+   visible. Coloured logos keep their original brand colours. */
+.ed-trust__marquee .ed-trust__logos li.is-dark img {
+  filter: brightness(0) invert(1);
+}
+
 @media (min-width: 768px) {
-  .ed-trust__marquee .ed-trust__logos { gap: 24px; }
-  .ed-trust__marquee .ed-trust__logos li { height: 68px; padding: 12px 24px; }
-  .ed-trust__marquee .ed-trust__logos li img { max-width: 160px; }
+  .ed-trust__marquee .ed-trust__logos { gap: 72px; }
+  .ed-trust__marquee .ed-trust__logos li { height: 60px; }
+  .ed-trust__marquee .ed-trust__logos li img { max-width: 190px; }
 }
 
 @keyframes marqueeSlide {
   from { transform: translateX(0); }
   to   { transform: translateX(-50%); }
-}
-
-@media (min-width: 768px) {
-  .ed-trust__marquee .ed-trust__logos { font-size: 20px; gap: 64px; }
 }
 
 /* —— Spotlight follows cursor in hero —— */

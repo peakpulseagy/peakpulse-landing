@@ -669,27 +669,29 @@ export default function EditorialLanding() {
               {[0, 1].map((dup) => (
                 <ul key={dup} className="ed-trust__logos">
                   {[
-                    { src: "/company-logos/british-media-company.png",  alt: "British Media Company" },
-                    { src: "/company-logos/damus-capital.svg",          alt: "Damus Capital" },
-                    { src: "/company-logos/abrahamic-investments.webp", alt: "Abrahamic Investments" },
-                    { src: "/company-logos/profin-partners.svg",        alt: "ProFin Partners" },
-                    { src: "/company-logos/resolve-capital.svg",        alt: "Resolve Capital" },
-                    { src: "/company-logos/osprey.svg",                 alt: "Osprey" },
-                    { src: "/company-logos/marriott-budapest.png",      alt: "Marriott Budapest" },
-                    { src: "/company-logos/berkeley-travel.svg",        alt: "Berkeley Travel" },
-                    { src: "/company-logos/kinzercoins.png",            alt: "Kinzer Coins" },
-                    { src: "/company-logos/jd-spirits.webp",            alt: "JD Spirits" },
-                    { src: "/company-logos/star.png",                   alt: "Star Ancients" },
-                    { src: "/company-logos/southwest-sips.png",         alt: "Southwest Sips" },
-                    { src: "/company-logos/big5-vape-shop.png",         alt: "Big5 Vape Shop" },
-                    { src: "/company-logos/a-home-touch.png",           alt: "A Home Touch" },
-                    { src: "/company-logos/verde-group-ai.png",         alt: "Verde Group AI" },
-                    { src: "/company-logos/singularity-group.svg",      alt: "The Singularity Group" },
-                    { src: "/company-logos/ledger-rocket.svg",          alt: "Ledger Rocket" },
-                    { src: "/company-logos/supersonicship.svg",         alt: "Supersonic Ship" },
-                    { src: "/company-logos/bridgemaster.webp",          alt: "Bridge Master" },
+                    // invert: true = the logo is dark/black and gets converted to white for visibility
+                    // invert: false = the logo already reads on a dark background, keep original color
+                    { src: "/company-logos/british-media-company.png",  alt: "British Media Company", invert: true  },
+                    { src: "/company-logos/damus-capital.svg",          alt: "Damus Capital",         invert: true  },
+                    { src: "/company-logos/abrahamic-investments.webp", alt: "Abrahamic Investments", invert: false },
+                    { src: "/company-logos/profin-partners.svg",        alt: "ProFin Partners",       invert: false },
+                    { src: "/company-logos/resolve-capital.svg",        alt: "Resolve Capital",       invert: false },
+                    { src: "/company-logos/osprey.svg",                 alt: "Osprey",                invert: false },
+                    { src: "/company-logos/marriott-budapest.png",      alt: "Marriott Budapest",     invert: true  },
+                    { src: "/company-logos/berkeley-travel.svg",        alt: "Berkeley Travel",       invert: false },
+                    { src: "/company-logos/kinzercoins.png",            alt: "Kinzer Coins",          invert: false },
+                    { src: "/company-logos/jd-spirits.webp",            alt: "JD Spirits",            invert: false },
+                    { src: "/company-logos/star.png",                   alt: "Star Ancients",         invert: false },
+                    { src: "/company-logos/southwest-sips.png",         alt: "Southwest Sips",        invert: false },
+                    { src: "/company-logos/big5-vape-shop.png",         alt: "Big5 Vape Shop",        invert: true  },
+                    { src: "/company-logos/a-home-touch.png",           alt: "A Home Touch",          invert: false },
+                    { src: "/company-logos/verde-group-ai.png",         alt: "Verde Group AI",        invert: false },
+                    { src: "/company-logos/singularity-group.svg",      alt: "The Singularity Group", invert: false },
+                    { src: "/company-logos/ledger-rocket.svg",          alt: "Ledger Rocket",         invert: true  },
+                    { src: "/company-logos/supersonicship.svg",         alt: "Supersonic Ship",       invert: false },
+                    { src: "/company-logos/bridgemaster.webp",          alt: "Bridge Master",         invert: true  },
                   ].map((logo) => (
-                    <li key={`${dup}-${logo.alt}`}>
+                    <li key={`${dup}-${logo.alt}`} className={logo.invert ? "is-dark" : undefined}>
                       <img src={logo.src} alt={logo.alt} loading="lazy" />
                     </li>
                   ))}
