@@ -3317,10 +3317,47 @@
   overflow: hidden;
 }
 
-/* Instagram embeds include caption + footer chrome — need taller aspect */
+/* Instagram embeds — embed.js renders blockquotes into iframes.
+   We let the rendered iframe define its own height (it's responsive),
+   so we only constrain min-height + width. */
 .ed-pf-reel__media--ig {
-  aspect-ratio: 9 / 14;
-  background: #000;
+  aspect-ratio: auto;
+  background: #FFF;
+  min-height: 260px;
+  display: block;
+  padding: 0;
+  overflow: hidden;
+}
+
+.ed-pf-reel__media--ig iframe,
+.ed-pf-reel__media--ig blockquote.instagram-media {
+  position: relative !important;
+  inset: auto !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  display: block !important;
+}
+
+/* Hide the placeholder text before embed.js processes the blockquote */
+.ed-pf-reel__media--ig blockquote.instagram-media:not([data-instgrm-payload-id]) {
+  min-height: 480px;
+  background: linear-gradient(135deg, #f4f4f4 0%, #e8e8e8 100%);
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  color: #555;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.ed-pf-reel__media--ig blockquote.instagram-media:not([data-instgrm-payload-id]) a {
+  color: #555;
+  text-decoration: none;
 }
 
 .ed-pf-reel__iframe {

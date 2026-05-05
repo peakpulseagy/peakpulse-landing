@@ -2,7 +2,16 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import Script from "next/script";
 import "./editorial.css";
+
+declare global {
+  interface Window {
+    instgrm?: {
+      Embeds: { process: () => void };
+    };
+  }
+}
 
 /* ──────────────────────────────────────────────
    Reveal-on-scroll
@@ -461,8 +470,18 @@ export default function EditorialLanding() {
   const [portfolioMode, setPortfolioMode] = useState<PortfolioMode>("carousel");
   const [pfFilter, setPfFilter] = useState<string>("all");
 
+  // Re-process Instagram embeds whenever the Video reel tab is opened
+  useEffect(() => {
+    if (portfolioMode !== "video") return;
+    const tick = () => window.instgrm?.Embeds?.process();
+    tick();                       // immediate pass
+    const t = setTimeout(tick, 600); // retry once script has settled
+    return () => clearTimeout(t);
+  }, [portfolioMode]);
+
   return (
     <div className="ed-shell">
+      <Script src="https://www.instagram.com/embed.js" strategy="afterInteractive" />
       <div className="ed-metal-shine" aria-hidden />
       <GradientDefs />
       <ScrollProgress />
@@ -877,14 +896,22 @@ export default function EditorialLanding() {
                   ) : (
                     <div className="ed-pf-reel__card ed-pf-reel__card--ig" key={`ig-${v.url}`}>
                       <div className="ed-pf-reel__media ed-pf-reel__media--ig">
-                        <iframe
-                          src={instagramEmbedUrl(v.url)}
-                          loading="lazy"
-                          allow="autoplay; encrypted-media; fullscreen"
-                          title={v.label}
-                          className="ed-pf-reel__iframe"
-                          scrolling="no"
-                        />
+                        <blockquote
+                          className="instagram-media"
+                          data-instgrm-permalink={v.url}
+                          data-instgrm-version="14"
+                          style={{
+                            background: "#FFF",
+                            border: 0,
+                            margin: 0,
+                            maxWidth: "100%",
+                            minWidth: "auto",
+                            padding: 0,
+                            width: "100%",
+                          }}
+                        >
+                          <a href={v.url} target="_blank" rel="noopener noreferrer">View on Instagram</a>
+                        </blockquote>
                       </div>
                       <a
                         className="ed-pf-reel__caption ed-pf-reel__caption--link"
