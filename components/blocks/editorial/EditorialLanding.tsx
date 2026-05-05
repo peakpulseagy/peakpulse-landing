@@ -271,6 +271,18 @@ const openBooking = () => {
   window.open(BOOKING_URL, "_blank", "noopener,noreferrer");
 };
 
+/**
+ * Build a reliable Instagram embed URL from any IG permalink.
+ * Instagram's /embed endpoint accepts /p/<shortcode> for both posts and reels,
+ * so normalising every URL to that format avoids 404s for /reels/ (plural)
+ * which is a feed-listing path that doesn't expose embed HTML.
+ */
+function instagramEmbedUrl(url: string): string {
+  const match = url.match(/\/(?:p|reel|reels)\/([^/?#]+)/);
+  if (!match) return url;
+  return `https://www.instagram.com/p/${match[1]}/embed`;
+}
+
 /* ──────────────────────────────────────────────
    Live activity ticker (rotates through booking events)
    ────────────────────────────────────────────── */
@@ -866,7 +878,7 @@ export default function EditorialLanding() {
                     <div className="ed-pf-reel__card ed-pf-reel__card--ig" key={`ig-${v.url}`}>
                       <div className="ed-pf-reel__media ed-pf-reel__media--ig">
                         <iframe
-                          src={`${v.url.replace(/\/$/, "")}/embed`}
+                          src={instagramEmbedUrl(v.url)}
                           loading="lazy"
                           allow="autoplay; encrypted-media; fullscreen"
                           title={v.label}
