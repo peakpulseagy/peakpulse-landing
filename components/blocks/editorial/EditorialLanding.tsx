@@ -122,13 +122,21 @@ function ScrollProgress() {
 }
 
 /* ──────────────────────────────────────────────
-   Dust-converge reveal for the hero dashboard.
-   Renders a canvas overlay that spawns ~thousands of dust
-   particles scattered around the dashboard, then drives them
-   along eased curves to their target pixel positions sampled
-   from the dashboard outline. As particles arrive, the canvas
-   fades out and the real dashboard reveals beneath. Same
-   "broken pieces converging" feel as the logo intro.
+   Sand-wave dust reveal for the hero dashboard.
+   Renders a canvas overlay carrying ~6,500 fine sand-grain
+   particles. The animation runs on a continuous loop with
+   four phases:
+     1. DANCE     — particles drift in a multi-octave wave
+                    field, fluid like wind blowing over sand
+     2. CONVERGE  — particles ease from their wave position
+                    onto target pixels sampled from the
+                    dashboard outline + chart bars
+     3. HOLD      — dashboard fully formed; particles settle
+                    to a low-alpha shimmer dusting the frame
+     4. DISPERSE  — particles peel away from their targets
+                    back into the wave field
+   The dashboard frames + callouts fade in/out in sync with
+   the cycle through CSS variables driven from the loop.
    ────────────────────────────────────────────── */
 function DustReveal({
   targetRef,
@@ -136,15 +144,18 @@ function DustReveal({
   targetRef: React.RefObject<HTMLDivElement | null>;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [done, setDone] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const target = targetRef.current;
     if (!canvas || !target) return;
+
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) {
-      setDone(true);
+      // No animation: reveal the dashboard at rest
+      target.style.setProperty("--reveal", "1");
+      target.style.setProperty("--reveal-blur", "0px");
+      target.style.setProperty("--reveal-scale", "1");
       return;
     }
 
@@ -154,187 +165,318 @@ function DustReveal({
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     let raf = 0;
     let running = false;
+    let visible = true;
+
+    const LOOP = 16000; // 16s full cycle (matches the logo's calmer rhythm)
 
     type Particle = {
-      x: number;
-      y: number;
-      tx: number;
-      ty: number;
-      sx: number;
-      sy: number;
-      hue: number;
-      size: number;
-      life: number;
-      delay: number;
+      tx: number;     // target X on the dashboard
+      ty: number;     // target Y
+      hx: number;     // home X for the dance phase
+      hy: number;     // home Y
+      hAmp: number;   // dance amplitude (px)
+      seed: number;   // 0..1 unique offset
+      size: number;   // 0.25..1.1 (sand-grain fine)
+      hue: number;    // 0 white, 165 teal, 4 coral
+      stagger: number;// 0..1 stagger for converge/disperse
     };
+
     let particles: Particle[] = [];
+    const PAD = 100;
+    let cw = 0;
+    let ch = 0;
     let startedAt = 0;
-    const DURATION = 2400; // ms
+    let pausedAt = 0;
+    let pauseTotal = 0;
 
     const sizeCanvas = () => {
       const r = target.getBoundingClientRect();
-      const pad = 80; // particles can fly in from outside the dashboard bounds
-      canvas.width = (r.width + pad * 2) * dpr;
-      canvas.height = (r.height + pad * 2) * dpr;
-      canvas.style.width = `${r.width + pad * 2}px`;
-      canvas.style.height = `${r.height + pad * 2}px`;
-      canvas.style.left = `${-pad}px`;
-      canvas.style.top = `${-pad}px`;
+      cw = r.width + PAD * 2;
+      ch = r.height + PAD * 2;
+      canvas.width = Math.round(cw * dpr);
+      canvas.height = Math.round(ch * dpr);
+      canvas.style.width = `${cw}px`;
+      canvas.style.height = `${ch}px`;
+      canvas.style.left = `${-PAD}px`;
+      canvas.style.top = `${-PAD}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      return { width: r.width + pad * 2, height: r.height + pad * 2, pad };
+      return { width: cw, height: ch, innerW: r.width, innerH: r.height };
     };
 
     const seedParticles = ({
       width,
       height,
-      pad,
+      innerW,
+      innerH,
     }: {
       width: number;
       height: number;
-      pad: number;
+      innerW: number;
+      innerH: number;
     }) => {
-      // Sample target positions on a dense grid that maps to the dashboard area.
-      // Edges + key chart bars are weighted heavier so the convergence reads
-      // as the dashboard outline forming.
-      const innerW = width - pad * 2;
-      const innerH = height - pad * 2;
-      const cols = 56;
-      const rows = 70;
-      const cellW = innerW / cols;
-      const cellH = innerH / rows;
+      // Adaptive count: plenty on desktop, lighter on small screens
+      const area = innerW * innerH;
+      const COUNT = Math.min(7200, Math.max(2200, Math.round(area / 95)));
+
       const list: Particle[] = [];
+      const cxc = width / 2;
+      const cyc = height / 2;
 
-      for (let cy = 0; cy < rows; cy++) {
-        for (let cx = 0; cx < cols; cx++) {
-          // Jitter target slightly within cell so it doesn't feel grid-y
-          const tx = pad + cx * cellW + (Math.random() - 0.5) * cellW * 0.7;
-          const ty = pad + cy * cellH + (Math.random() - 0.5) * cellH * 0.7;
+      // Bar heights — sampled from the actual dashboard bars
+      const barHeights = [0.32, 0.56, 0.44, 0.78, 0.64, 0.92, 1.0];
 
-          // Drop ~55% of inner cells; keep edges, top chrome, and bottom rows for outline emphasis
-          const onEdge = cx < 2 || cx > cols - 3 || cy < 4 || cy > rows - 3;
-          const onChartBand = cy > rows * 0.55 && cy < rows * 0.85;
-          if (!onEdge && !onChartBand && Math.random() > 0.45) continue;
+      for (let i = 0; i < COUNT; i++) {
+        // Decide where this particle's TARGET should land on the dashboard
+        const cat = Math.random();
+        let tx = 0;
+        let ty = 0;
 
-          // Scatter origin: random direction, large radius from canvas center
-          const cxc = width / 2;
-          const cyc = height / 2;
-          const ang = Math.random() * Math.PI * 2;
-          const radius = Math.max(width, height) * (0.55 + Math.random() * 0.7);
-          const sx = cxc + Math.cos(ang) * radius;
-          const sy = cyc + Math.sin(ang) * radius;
-
-          // 60% white dust, 25% teal, 15% coral
-          const r = Math.random();
-          const hue = r < 0.6 ? 0 : r < 0.85 ? 165 : 4;
-
-          list.push({
-            x: sx,
-            y: sy,
-            sx,
-            sy,
-            tx,
-            ty,
-            hue,
-            size: 0.6 + Math.random() * 1.6,
-            life: 0,
-            delay: Math.random() * 0.35, // 0..0.35 of duration
-          });
+        if (cat < 0.16) {
+          // Top chrome band (window dots + URL)
+          tx = PAD + Math.random() * innerW;
+          ty = PAD + Math.random() * Math.min(innerH * 0.10, 56);
+        } else if (cat < 0.46) {
+          // The bar chart — what most people read as "the dashboard"
+          const barIdx = Math.floor(Math.random() * 7);
+          const chartLeft = PAD + innerW * 0.10;
+          const chartRight = PAD + innerW * 0.92;
+          const chartW = chartRight - chartLeft;
+          const slot = chartW / 7;
+          const bh = barHeights[barIdx];
+          const chartTop = PAD + innerH * 0.55;
+          const chartBot = PAD + innerH * 0.84;
+          tx = chartLeft + (barIdx + 0.5) * slot + (Math.random() - 0.5) * slot * 0.6;
+          // Distribute up the bar — denser at the bar top edge
+          const v = Math.pow(Math.random(), 0.7); // bias toward 1 (top)
+          ty = chartBot - v * (chartBot - chartTop) * bh;
+        } else if (cat < 0.78) {
+          // Outline of the frame so the silhouette forms cleanly
+          const side = Math.floor(Math.random() * 4);
+          const t = Math.random();
+          if (side === 0) {
+            tx = PAD + t * innerW;
+            ty = PAD + Math.random() * 4;
+          } else if (side === 1) {
+            tx = PAD + t * innerW;
+            ty = PAD + innerH - Math.random() * 4;
+          } else if (side === 2) {
+            tx = PAD + Math.random() * 4;
+            ty = PAD + t * innerH;
+          } else {
+            tx = PAD + innerW - Math.random() * 4;
+            ty = PAD + t * innerH;
+          }
+        } else if (cat < 0.90) {
+          // Headline area "Engagement up +218%"
+          tx = PAD + innerW * (0.10 + Math.random() * 0.70);
+          ty = PAD + innerH * (0.30 + Math.random() * 0.18);
+        } else {
+          // Subtle scattered interior — soft fill so the inside isn't empty
+          tx = PAD + innerW * (0.06 + Math.random() * 0.88);
+          ty = PAD + innerH * (0.20 + Math.random() * 0.60);
         }
+
+        // Home (dance) position: scattered around the canvas center.
+        // Bias toward filling the canvas so the wave looks dense.
+        const ang = Math.random() * Math.PI * 2;
+        const rr = Math.min(width, height) * (0.18 + Math.random() * 0.55);
+        const hx = cxc + Math.cos(ang) * rr;
+        const hy = cyc + Math.sin(ang) * rr * 0.85;
+
+        const rh = Math.random();
+        // 70% pure white sand, 22% teal accent, 8% coral accent
+        const hue = rh < 0.70 ? 0 : rh < 0.92 ? 165 : 4;
+
+        list.push({
+          tx,
+          ty,
+          hx,
+          hy,
+          hAmp: 14 + Math.random() * 36,
+          seed: Math.random(),
+          size: 0.28 + Math.random() * 0.82,
+          hue,
+          stagger: Math.random() * 0.22,
+        });
       }
       return list;
     };
 
-    const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
+    const easeInOut = (t: number) =>
+      t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+
+    // Multi-octave wave field — produces a fluid, sand-being-blown look.
+    // Each particle's home position + seed phase-shifts the curves so
+    // neighbours move similarly (read as a wave) but never identically.
+    const waveX = (p: Particle, time: number) => {
+      const t = time * 0.00045;
+      const a = p.seed * Math.PI * 2;
+      return (
+        p.hAmp *
+        (Math.sin(t * 1.10 + a) * 0.55 +
+          Math.cos(t * 0.72 + p.hy * 0.0125) * 0.30 +
+          Math.sin(t * 1.45 + p.hx * 0.0091 + a * 2.1) * 0.22)
+      );
+    };
+    const waveY = (p: Particle, time: number) => {
+      const t = time * 0.00045;
+      const a = p.seed * Math.PI * 2;
+      return (
+        p.hAmp *
+        (Math.cos(t * 1.00 + a + 1.27) * 0.55 +
+          Math.sin(t * 0.84 + p.hx * 0.0114) * 0.30 +
+          Math.cos(t * 1.32 + p.hy * 0.0098 + a * 2.1) * 0.22)
+      );
+    };
+
+    const setReveal = (reveal: number) => {
+      target.style.setProperty("--reveal", String(reveal));
+      target.style.setProperty("--reveal-blur", `${(1 - reveal) * 24}px`);
+      target.style.setProperty("--reveal-scale", String(1 + (1 - reveal) * 0.05));
+    };
 
     const draw = (now: number) => {
-      const t = (now - startedAt) / DURATION; // 0..1
-      const w = canvas.width / dpr;
-      const h = canvas.height / dpr;
-      ctx.clearRect(0, 0, w, h);
+      const elapsed = now - startedAt - pauseTotal;
+      const cycle = (elapsed % LOOP) / LOOP; // 0..1
 
-      let arrived = 0;
+      // Phase boundaries inside one loop
+      // 0.00 – 0.30   DANCE     (4.8s)
+      // 0.30 – 0.50   CONVERGE  (3.2s)
+      // 0.50 – 0.72   HOLD      (3.5s)
+      // 0.72 – 1.00   DISPERSE  (4.5s)
+      let phase: "dance" | "converge" | "hold" | "disperse";
+      let phaseT: number;
+      let dashboardReveal: number;
+      let alphaMul: number;
+
+      if (cycle < 0.30) {
+        phase = "dance";
+        phaseT = cycle / 0.30;
+        dashboardReveal = 0;
+        alphaMul = 0.85;
+      } else if (cycle < 0.50) {
+        phase = "converge";
+        phaseT = (cycle - 0.30) / 0.20;
+        dashboardReveal = easeInOut(phaseT);
+        alphaMul = 0.85 - phaseT * 0.50; // 0.85 → 0.35 as dashboard takes over
+      } else if (cycle < 0.72) {
+        phase = "hold";
+        phaseT = (cycle - 0.50) / 0.22;
+        dashboardReveal = 1;
+        alphaMul = 0.28; // subtle dust shimmer on the dashboard
+      } else {
+        phase = "disperse";
+        phaseT = (cycle - 0.72) / 0.28;
+        dashboardReveal = 1 - easeInOut(phaseT);
+        alphaMul = 0.28 + phaseT * 0.55; // 0.28 → 0.83
+      }
+
+      setReveal(dashboardReveal);
+
+      ctx.clearRect(0, 0, cw, ch);
       ctx.globalCompositeOperation = "lighter";
+
+      const time = elapsed;
+
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
-        // Per-particle progress with delay, clamped 0..1
-        const local = Math.max(0, Math.min(1, (t - p.delay) / (1 - p.delay)));
-        const e = easeOut(local);
-        p.x = p.sx + (p.tx - p.sx) * e;
-        p.y = p.sy + (p.ty - p.sy) * e;
+        const wx = p.hx + waveX(p, time);
+        const wy = p.hy + waveY(p, time);
 
-        // Fade in early, fade out as we settle so they "dissolve" into the frame
-        const fadeIn = Math.min(1, local * 4);
-        const fadeOut = Math.max(0, 1 - Math.max(0, (local - 0.7) / 0.3));
-        const alpha = fadeIn * fadeOut;
-        if (alpha <= 0.01) {
-          if (local >= 1) arrived++;
-          continue;
+        let px: number;
+        let py: number;
+
+        if (phase === "dance") {
+          px = wx;
+          py = wy;
+        } else if (phase === "converge") {
+          // Stagger by per-particle offset so they trickle into place
+          const s = (phaseT - p.stagger) / (1 - p.stagger);
+          const e = easeInOut(Math.max(0, Math.min(1, s)));
+          px = wx + (p.tx - wx) * e;
+          py = wy + (p.ty - wy) * e;
+        } else if (phase === "hold") {
+          // Tiny drift so the sand never freezes
+          px = p.tx + waveX(p, time) * 0.10;
+          py = p.ty + waveY(p, time) * 0.10;
+        } else {
+          const s = (phaseT - p.stagger) / (1 - p.stagger);
+          const e = easeInOut(Math.max(0, Math.min(1, s)));
+          px = p.tx + (wx - p.tx) * e;
+          py = p.ty + (wy - p.ty) * e;
         }
 
+        const a = alphaMul;
         let fill: string;
-        if (p.hue === 0) fill = `rgba(255, 255, 255, ${alpha * 0.95})`;
-        else if (p.hue === 165) fill = `rgba(0, 212, 170, ${alpha * 0.85})`;
-        else fill = `rgba(255, 92, 92, ${alpha * 0.85})`;
+        if (p.hue === 0) fill = `rgba(255, 255, 255, ${a * 0.95})`;
+        else if (p.hue === 165) fill = `rgba(0, 212, 170, ${a * 0.85})`;
+        else fill = `rgba(255, 92, 92, ${a * 0.85})`;
 
-        ctx.beginPath();
         ctx.fillStyle = fill;
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.beginPath();
+        ctx.arc(px, py, p.size, 0, Math.PI * 2);
         ctx.fill();
-        if (local >= 1) arrived++;
       }
+
       ctx.globalCompositeOperation = "source-over";
 
-      if (t < 1.05) {
-        raf = requestAnimationFrame(draw);
-      } else {
-        running = false;
-        setDone(true);
-      }
+      raf = requestAnimationFrame(draw);
     };
 
     const start = () => {
       if (running) return;
+      running = true;
       const dims = sizeCanvas();
       particles = seedParticles(dims);
-      startedAt = performance.now();
-      running = true;
+      if (startedAt === 0) {
+        startedAt = performance.now();
+      } else {
+        // Resume — preserve cycle position
+        pauseTotal += performance.now() - pausedAt;
+      }
       raf = requestAnimationFrame(draw);
     };
 
-    // Trigger when the visual enters the viewport (keeps SSR/hydration happy)
+    const pause = () => {
+      if (!running) return;
+      running = false;
+      pausedAt = performance.now();
+      cancelAnimationFrame(raf);
+    };
+
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
-          if (e.isIntersecting) {
-            io.disconnect();
-            start();
-          }
+          visible = e.isIntersecting;
+          if (visible && !running) start();
+          else if (!visible && running) pause();
         });
       },
-      { threshold: 0.15 }
+      { threshold: 0.05 }
     );
     io.observe(target);
 
     const onResize = () => {
-      if (!running) return;
-      sizeCanvas();
+      const dims = sizeCanvas();
+      particles = seedParticles(dims);
     };
     window.addEventListener("resize", onResize);
+
+    const onVisChange = () => {
+      if (document.hidden) pause();
+      else if (visible) start();
+    };
+    document.addEventListener("visibilitychange", onVisChange);
 
     return () => {
       io.disconnect();
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", onResize);
+      document.removeEventListener("visibilitychange", onVisChange);
     };
   }, [targetRef]);
 
-  return (
-    <canvas
-      ref={canvasRef}
-      className={`ed-hero__dust ${done ? "is-done" : ""}`}
-      aria-hidden
-    />
-  );
+  return <canvas ref={canvasRef} className="ed-hero__dust" aria-hidden />;
 }
 
 /* ──────────────────────────────────────────────
