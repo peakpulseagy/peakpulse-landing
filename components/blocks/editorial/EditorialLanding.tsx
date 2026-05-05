@@ -169,6 +169,39 @@ function DustReveal({
 
     const LOOP = 18000; // 18s full cycle — calm, deliberate
 
+    // Pre-computed flowing gradient palette: 512 lookup entries cycling
+    // white → teal → soft blue → coral → white. Each particle samples
+    // this palette using (its diagonal position + time offset), so the
+    // gradient appears to flow across the entire dust field.
+    const PALETTE_SIZE = 512;
+    const palette = new Uint8Array(PALETTE_SIZE * 3);
+    {
+      const stops: { t: number; r: number; g: number; b: number }[] = [
+        { t: 0.00, r: 255, g: 255, b: 255 }, // white
+        { t: 0.18, r: 0,   g: 212, b: 170 }, // brand teal
+        { t: 0.40, r: 130, g: 180, b: 240 }, // soft glacial blue
+        { t: 0.62, r: 255, g: 92,  b: 92  }, // brand coral
+        { t: 0.82, r: 255, g: 200, b: 120 }, // warm sand gold
+        { t: 1.00, r: 255, g: 255, b: 255 }, // wrap to white
+      ];
+      for (let i = 0; i < PALETTE_SIZE; i++) {
+        const t = i / (PALETTE_SIZE - 1);
+        let a = stops[0];
+        let b = stops[stops.length - 1];
+        for (let j = 0; j < stops.length - 1; j++) {
+          if (t >= stops[j].t && t <= stops[j + 1].t) {
+            a = stops[j];
+            b = stops[j + 1];
+            break;
+          }
+        }
+        const local = (t - a.t) / (b.t - a.t || 1);
+        palette[i * 3 + 0] = Math.round(a.r + (b.r - a.r) * local);
+        palette[i * 3 + 1] = Math.round(a.g + (b.g - a.g) * local);
+        palette[i * 3 + 2] = Math.round(a.b + (b.b - a.b) * local);
+      }
+    }
+
     type Particle = {
       tx: number;     // target X on the dashboard
       ty: number;     // target Y
@@ -176,12 +209,15 @@ function DustReveal({
       hy: number;     // home Y
       hAmp: number;   // dance amplitude (px)
       seed: number;   // 0..1 unique offset
-      size: number;   // 0.25..1.1 (sand-grain fine)
-      hue: number;    // 0 white, 165 teal, 4 coral
+      gradPos: number;// 0..1 baseline position in the palette
       stagger: number;// 0..1 stagger for converge/disperse
     };
 
     let particles: Particle[] = [];
+    let imageData: ImageData | null = null;
+    let buf: Uint8ClampedArray | null = null;
+    let bufW = 0;
+    let bufH = 0;
     const PAD = 100;
     let cw = 0;
     let ch = 0;
@@ -193,13 +229,18 @@ function DustReveal({
       const r = target.getBoundingClientRect();
       cw = r.width + PAD * 2;
       ch = r.height + PAD * 2;
-      canvas.width = Math.round(cw * dpr);
-      canvas.height = Math.round(ch * dpr);
+      bufW = Math.round(cw * dpr);
+      bufH = Math.round(ch * dpr);
+      canvas.width = bufW;
+      canvas.height = bufH;
       canvas.style.width = `${cw}px`;
       canvas.style.height = `${ch}px`;
       canvas.style.left = `${-PAD}px`;
       canvas.style.top = `${-PAD}px`;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      // Reset transform — we draw directly into pixel coordinates
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      imageData = ctx.createImageData(bufW, bufH);
+      buf = imageData.data;
       return { width: cw, height: ch, innerW: r.width, innerH: r.height };
     };
 
@@ -214,9 +255,14 @@ function DustReveal({
       innerW: number;
       innerH: number;
     }) => {
-      // Adaptive count, deliberately leaner so the formation reads clean
+      // Massive density — fine sand grains, tens of thousands of them.
+      // We render via a manually-blended ImageData buffer so this many
+      // particles still hits 60fps. Adaptive: lighter on small screens.
       const area = innerW * innerH;
-      const COUNT = Math.min(3200, Math.max(1400, Math.round(area / 220)));
+      const isMobile = innerW < 600;
+      const COUNT = isMobile
+        ? Math.min(22000, Math.round(area / 8))
+        : Math.min(60000, Math.round(area / 4));
 
       const list: Particle[] = [];
       const cxc = width / 2;
@@ -279,16 +325,19 @@ function DustReveal({
         const hx = cxc + Math.cos(ang) * rr;
         const hy = cyc + Math.sin(ang) * rr * 0.85;
 
-        // Pure white sand only — coloured accents added too much chroma noise
+        // Each grain carries a baseline position in the gradient palette
+        // computed from a diagonal so neighbouring grains sample similar
+        // colours. Time offset moves the gradient through the field.
+        const diag = (tx + ty * 0.55) / (innerW + innerH * 0.55);
+
         list.push({
           tx,
           ty,
           hx,
           hy,
-          hAmp: 10 + Math.random() * 26,
+          hAmp: 12 + Math.random() * 30,
           seed: Math.random(),
-          size: 0.30 + Math.random() * 0.55, // finer + tighter range = crisper
-          hue: 0,
+          gradPos: diag + (Math.random() - 0.5) * 0.04,
           stagger: Math.random() * 0.20,
         });
       }
@@ -369,20 +418,34 @@ function DustReveal({
 
       setReveal(dashboardReveal);
 
-      ctx.clearRect(0, 0, cw, ch);
+      // Clear the buffer
+      if (!buf || !imageData) {
+        raf = requestAnimationFrame(draw);
+        return;
+      }
+      buf.fill(0);
 
-      // HOLD phase — skip the per-particle loop entirely. Canvas is empty,
-      // the dashboard reads completely clean.
+      // HOLD — skip work entirely. The dashboard sits 100% clean.
       if (alphaMul <= 0.001) {
+        ctx.putImageData(imageData, 0, 0);
         raf = requestAnimationFrame(draw);
         return;
       }
 
-      ctx.globalCompositeOperation = "lighter";
       const time = elapsed;
+      // Gradient flow speed — full sweep every ~6s
+      const gradOffset = (time * 0.000165) % 1;
+      const W = bufW;
+      const H = bufH;
+
+      // Cache for hot loop
+      const pal = palette;
+      const data = buf;
 
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
+
+        // Compute position for this phase
         const wx = p.hx + waveX(p, time);
         const wy = p.hy + waveY(p, time);
 
@@ -394,24 +457,48 @@ function DustReveal({
           py = wy;
         } else if (phase === "converge") {
           const s = (phaseT - p.stagger) / (1 - p.stagger);
-          const e = easeInOut(Math.max(0, Math.min(1, s)));
+          const e = s <= 0 ? 0 : s >= 1 ? 1 : easeInOut(s);
           px = wx + (p.tx - wx) * e;
           py = wy + (p.ty - wy) * e;
         } else {
-          // disperse
           const s = (phaseT - p.stagger) / (1 - p.stagger);
-          const e = easeInOut(Math.max(0, Math.min(1, s)));
+          const e = s <= 0 ? 0 : s >= 1 ? 1 : easeInOut(s);
           px = p.tx + (wx - p.tx) * e;
           py = p.ty + (wy - p.ty) * e;
         }
 
-        ctx.fillStyle = `rgba(255, 255, 255, ${alphaMul * 0.92})`;
-        ctx.beginPath();
-        ctx.arc(px, py, p.size, 0, Math.PI * 2);
-        ctx.fill();
+        // Sample the moving gradient
+        let gp = (p.gradPos + gradOffset) % 1;
+        if (gp < 0) gp += 1;
+        const palIdx = ((gp * PALETTE_SIZE) | 0) * 3;
+        const r = pal[palIdx];
+        const g = pal[palIdx + 1];
+        const b = pal[palIdx + 2];
+
+        // To pixel coords (DPR-aware)
+        const x = (px * dpr) | 0;
+        const y = (py * dpr) | 0;
+        if (x < 0 || x >= W || y < 0 || y >= H) continue;
+
+        // Manual additive blend so dense overlaps glow softly.
+        // Multiply colour by alphaMul and clamp.
+        const off = (y * W + x) << 2;
+        const ar = (r * alphaMul) | 0;
+        const ag = (g * alphaMul) | 0;
+        const ab = (b * alphaMul) | 0;
+        const aa = (255 * alphaMul) | 0;
+
+        const v0 = data[off] + ar;
+        const v1 = data[off + 1] + ag;
+        const v2 = data[off + 2] + ab;
+        const v3 = data[off + 3] + aa;
+        data[off] = v0 > 255 ? 255 : v0;
+        data[off + 1] = v1 > 255 ? 255 : v1;
+        data[off + 2] = v2 > 255 ? 255 : v2;
+        data[off + 3] = v3 > 255 ? 255 : v3;
       }
 
-      ctx.globalCompositeOperation = "source-over";
+      ctx.putImageData(imageData, 0, 0);
 
       raf = requestAnimationFrame(draw);
     };
