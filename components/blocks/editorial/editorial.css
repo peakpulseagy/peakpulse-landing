@@ -2644,9 +2644,9 @@
 
 .ed-trust__marquee .ed-trust__logos {
   display: flex;
-  gap: 64px;
+  gap: 18px;
   margin: 0;
-  padding: 0 28px;
+  padding: 0 14px;
   list-style: none;
   flex-shrink: 0;
   align-items: center;
@@ -2656,20 +2656,24 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 44px;
+  height: 60px;
+  padding: 10px 20px;
   flex-shrink: 0;
-  transition: opacity 0.35s var(--ease-luxe), transform 0.35s var(--ease-luxe);
-  opacity: 0.85;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 10px;
+  box-shadow: 0 4px 14px -4px rgba(0, 0, 0, 0.4);
+  transition: transform 0.35s var(--ease-luxe), box-shadow 0.35s var(--ease-luxe);
 }
 
 .ed-trust__marquee .ed-trust__logos li:hover {
-  opacity: 1;
   transform: scale(1.05);
+  box-shadow: 0 8px 22px -4px rgba(0, 0, 0, 0.5);
 }
 
 .ed-trust__marquee .ed-trust__logos li img {
   max-height: 100%;
-  max-width: 160px;
+  max-width: 140px;
   width: auto;
   height: auto;
   object-fit: contain;
@@ -2677,9 +2681,9 @@
 }
 
 @media (min-width: 768px) {
-  .ed-trust__marquee .ed-trust__logos { gap: 80px; }
-  .ed-trust__marquee .ed-trust__logos li { height: 52px; }
-  .ed-trust__marquee .ed-trust__logos li img { max-width: 180px; }
+  .ed-trust__marquee .ed-trust__logos { gap: 24px; }
+  .ed-trust__marquee .ed-trust__logos li { height: 68px; padding: 12px 24px; }
+  .ed-trust__marquee .ed-trust__logos li img { max-width: 160px; }
 }
 
 @keyframes marqueeSlide {
