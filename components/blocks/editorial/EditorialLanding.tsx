@@ -1020,6 +1020,7 @@ export default function EditorialLanding() {
                   { kicker: "Studio · Volume 02", title: "Editorial deck · Volume 02", read: "Open in Canva", id: "DAG5CJGBKfU", token: "hvvntRKNAZ84sI7DMYP8Ug", url: "https://canva.link/91xbzay0yovn7h9" },
                   { kicker: "Studio · Volume 03", title: "Editorial deck · Volume 03", read: "Open in Canva", id: "DAGZqRbWGf0", token: "IVv6bF79BN5BrMVmrC624w", url: "https://canva.link/6pzd3yed1xuz528" },
                   { kicker: "Studio · Volume 04", title: "Editorial deck · Volume 04", read: "Open in Canva", id: "DAG5CDbckrw", token: "CsbaCrkXKrtlcavGiiQscQ", url: "https://canva.link/hr2t94jl7d7h2s3" },
+                  { kicker: "Studio · Volume 05", title: "Editorial deck · Volume 05", read: "Open in Canva", id: "DAGXAVnbmv4", token: "bitSTDdM8SwJGHbvXcK5gA", url: "https://www.canva.com/design/DAGXAVnbmv4/bitSTDdM8SwJGHbvXcK5gA/view" },
                 ].map((m) => (
                   <article className="ed-pf-mag__story" key={m.title}>
                     <div className="ed-pf-mag__embed">
