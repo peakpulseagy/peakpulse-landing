@@ -2658,14 +2658,13 @@
   justify-content: center;
   height: 44px;
   flex-shrink: 0;
-  transition: opacity 0.35s var(--ease-luxe), filter 0.35s var(--ease-luxe);
-  opacity: 0.65;
-  filter: grayscale(100%) brightness(0) invert(1);
+  transition: opacity 0.35s var(--ease-luxe), transform 0.35s var(--ease-luxe);
+  opacity: 0.85;
 }
 
 .ed-trust__marquee .ed-trust__logos li:hover {
   opacity: 1;
-  filter: grayscale(0%) brightness(1) invert(0);
+  transform: scale(1.05);
 }
 
 .ed-trust__marquee .ed-trust__logos li img {
