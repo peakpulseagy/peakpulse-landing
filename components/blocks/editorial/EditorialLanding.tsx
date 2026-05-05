@@ -283,10 +283,9 @@ function instagramEmbedUrl(url: string): string {
   return `https://www.instagram.com/p/${match[1]}/embed`;
 }
 
-/* Branded poster card · click loads the real IG embed in place.
-   Solves the "white card" problem: every card always shows a visible
-   gradient + play button thumbnail, never blank, regardless of whether
-   Instagram's embed.js processes the blockquote in time. */
+/* Direct Instagram embed iframe — auto-loads the real video thumbnail
+   from Instagram. User can play in place via Instagram's own play button.
+   No click-to-reveal, no gradient placeholder. */
 function InstagramVideoCard({
   url,
   label,
@@ -298,52 +297,17 @@ function InstagramVideoCard({
   sub: string;
   index: number;
 }) {
-  const [activated, setActivated] = useState(false);
-
-  // Six brand-color poster gradients, cycled by card index for variety
-  const posters = [
-    "linear-gradient(135deg, #FF5C5C 0%, #FF8B5C 100%)",
-    "linear-gradient(135deg, #00D4AA 0%, #0BB89A 100%)",
-    "linear-gradient(135deg, #FF5C5C 0%, #00D4AA 100%)",
-    "linear-gradient(135deg, #FFB050 0%, #FF5C5C 100%)",
-    "linear-gradient(135deg, #0BB89A 0%, #FF8B5C 100%)",
-    "linear-gradient(135deg, #1A2438 0%, #FF8B5C 100%)",
-  ];
-  const poster = posters[index % posters.length];
-
   return (
     <div className="ed-pf-reel__card ed-pf-reel__card--ig">
       <div className="ed-pf-reel__media ed-pf-reel__media--ig">
-        {activated ? (
-          <iframe
-            src={instagramEmbedUrl(url)}
-            allow="autoplay; encrypted-media; fullscreen"
-            title={label}
-            className="ed-pf-reel__iframe"
-            scrolling="no"
-          />
-        ) : (
-          <button
-            type="button"
-            className="ed-pf-reel__poster"
-            style={{ background: poster }}
-            onClick={() => setActivated(true)}
-            aria-label={`Play ${label}`}
-          >
-            <span className="ed-pf-reel__poster-play" aria-hidden>
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M8 5v14l11-7z" />
-              </svg>
-            </span>
-            <span className="ed-pf-reel__poster-iglogo" aria-hidden>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="2" y="2" width="20" height="20" rx="5" />
-                <circle cx="12" cy="12" r="4" />
-                <circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" />
-              </svg>
-            </span>
-          </button>
-        )}
+        <iframe
+          src={instagramEmbedUrl(url)}
+          allow="autoplay; encrypted-media; fullscreen"
+          title={label}
+          className="ed-pf-reel__iframe"
+          scrolling="no"
+          loading="lazy"
+        />
       </div>
       <a
         className="ed-pf-reel__caption ed-pf-reel__caption--link"
