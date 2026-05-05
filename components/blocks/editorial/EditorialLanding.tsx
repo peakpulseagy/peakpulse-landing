@@ -473,19 +473,23 @@ function DustReveal({
           const e = s <= 0 ? 0 : s >= 1 ? 1 : easeInOut(s);
           px = wx + (p.tx - wx) * e;
           py = wy + (p.ty - wy) * e;
-          // Fade out as the grain reaches target — clean handoff
-          pAlpha = 1 - e;
+          // Cubic fade so grains in transit are barely visible —
+          // they only flash bright at the moment of arrival, then
+          // are gone. No half-rendered stragglers in the middle.
+          const inv = 1 - e;
+          pAlpha = inv * inv * inv;
         } else {
           const s = (phaseT - p.stagger) / (1 - p.stagger);
           const e = s <= 0 ? 0 : s >= 1 ? 1 : easeInOut(s);
           px = p.tx + (wx - p.tx) * e;
           py = p.ty + (wy - p.ty) * e;
-          // Fade in as the grain leaves target
-          pAlpha = e;
+          // Mirror: cubic fade-in only after the grain has actually
+          // peeled off its target.
+          pAlpha = e * e * e;
         }
 
         const a = alphaMul * pAlpha;
-        if (a < 0.01) continue;
+        if (a < 0.012) continue;
 
         // Sample the moving gradient
         let gp = (p.gradPos + gradOffset) % 1;
