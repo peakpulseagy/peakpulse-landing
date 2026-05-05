@@ -255,26 +255,27 @@ function DustReveal({
       innerW: number;
       innerH: number;
     }) => {
-      // Dense fine sand, but not so dense that converge/disperse looks
-      // like a cloud of stragglers. Each grain has a per-particle alpha
-      // handoff so the field stays clean during transitions.
+      // Plenty of grains for the wave dance look but not so many that
+      // the snap-converge / snap-disperse moment carries visible mess.
       const area = innerW * innerH;
       const isMobile = innerW < 600;
       const COUNT = isMobile
-        ? Math.min(8000, Math.round(area / 22))
-        : Math.min(20000, Math.round(area / 14));
+        ? Math.min(5000, Math.round(area / 36))
+        : Math.min(13000, Math.round(area / 22));
 
       const list: Particle[] = [];
 
-      // Constrain "home" (dance) positions to a halo around the dashboard
-      // bounds rather than the full canvas. Stops the field from scattering
-      // grains far below or beside the frame, which read as messy.
-      const haloX = Math.min(40, innerW * 0.10);
-      const haloY = Math.min(60, innerH * 0.08);
-      const homeLeft = PAD - haloX;
-      const homeRight = PAD + innerW + haloX;
-      const homeTop = PAD - haloY;
-      const homeBottom = PAD + innerH + haloY;
+      // Dance grains live in a ring OUTSIDE the dashboard frame, never
+      // inside it. The dashboard interior stays clean during the dance
+      // because there are no grains there at all. Grains only enter the
+      // interior briefly during the snap converge/disperse, and the
+      // cubic alpha curve plus 1.1s window means that's barely visible.
+      const haloX = 90;
+      const haloY = 120;
+      const dashLeft = PAD;
+      const dashRight = PAD + innerW;
+      const dashTop = PAD;
+      const dashBottom = PAD + innerH;
 
       // Bar heights — sampled from the actual dashboard bars
       const barHeights = [0.32, 0.56, 0.44, 0.78, 0.64, 0.92, 1.0];
@@ -327,10 +328,28 @@ function DustReveal({
           ty = PAD + innerH * (0.30 + Math.random() * 0.16);
         }
 
-        // Home (dance) position: random point inside the dashboard halo,
-        // not the whole canvas. Keeps the dance contained and tidy.
-        const hx = homeLeft + Math.random() * (homeRight - homeLeft);
-        const hy = homeTop + Math.random() * (homeBottom - homeTop);
+        // Home (dance) position: pick one of the four halo sides so
+        // grains sit in a ring around the dashboard, never on top of it.
+        let hx: number;
+        let hy: number;
+        const side = Math.floor(Math.random() * 4);
+        if (side === 0) {
+          // Top halo strip
+          hx = dashLeft - haloX + Math.random() * (innerW + haloX * 2);
+          hy = dashTop - haloY + Math.random() * haloY;
+        } else if (side === 1) {
+          // Bottom halo strip
+          hx = dashLeft - haloX + Math.random() * (innerW + haloX * 2);
+          hy = dashBottom + Math.random() * haloY;
+        } else if (side === 2) {
+          // Left halo strip
+          hx = dashLeft - haloX + Math.random() * haloX;
+          hy = dashTop + Math.random() * innerH;
+        } else {
+          // Right halo strip
+          hx = dashRight + Math.random() * haloX;
+          hy = dashTop + Math.random() * innerH;
+        }
 
         // Each grain carries a baseline position in the gradient palette
         // computed from a diagonal so neighbouring grains sample similar
@@ -398,29 +417,34 @@ function DustReveal({
       let dashboardReveal: number;
       let alphaMul: number;
 
-      // Phase boundaries — DANCE → CONVERGE → HOLD → DISPERSE
-      // During HOLD the particles are fully invisible so the dashboard
-      // reads completely clean, no shimmer noise sitting on top.
-      if (cycle < 0.28) {
+      // Phase boundaries — DANCE long, CONVERGE/DISPERSE snappy, HOLD long.
+      // Snappy transitions mean any in-transit grain is on screen for
+      // such a short moment that the eye reads it as a flash, not mess.
+      //
+      //   0.00 – 0.36   DANCE     (~6.5s) — visible wave
+      //   0.36 – 0.42   CONVERGE  (~1.1s) — snap into formation
+      //   0.42 – 0.92   HOLD      (~9.0s) — clean dashboard
+      //   0.92 – 1.00   DISPERSE  (~1.4s) — snap back to dance
+      if (cycle < 0.36) {
         phase = "dance";
-        phaseT = cycle / 0.28;
+        phaseT = cycle / 0.36;
         dashboardReveal = 0;
-        alphaMul = 0.78;
-      } else if (cycle < 0.48) {
+        alphaMul = 0.72;
+      } else if (cycle < 0.42) {
         phase = "converge";
-        phaseT = (cycle - 0.28) / 0.20;
+        phaseT = (cycle - 0.36) / 0.06;
         dashboardReveal = easeInOut(phaseT);
-        alphaMul = 0.78 * (1 - easeInOut(phaseT)); // → 0 as dashboard takes over
-      } else if (cycle < 0.74) {
+        alphaMul = 0.72 * (1 - easeInOut(phaseT));
+      } else if (cycle < 0.92) {
         phase = "hold";
-        phaseT = (cycle - 0.48) / 0.26;
+        phaseT = (cycle - 0.42) / 0.50;
         dashboardReveal = 1;
         alphaMul = 0;
       } else {
         phase = "disperse";
-        phaseT = (cycle - 0.74) / 0.26;
+        phaseT = (cycle - 0.92) / 0.08;
         dashboardReveal = 1 - easeInOut(phaseT);
-        alphaMul = 0.78 * easeInOut(phaseT); // 0 → 0.78
+        alphaMul = 0.72 * easeInOut(phaseT);
       }
 
       setReveal(dashboardReveal);
