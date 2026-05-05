@@ -32,5 +32,8 @@
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
     "typescript": "^5"
+  },
+  "overrides": {
+    "@sanity/client": "^7.13.1"
   }
 }
