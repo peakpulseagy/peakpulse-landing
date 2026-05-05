@@ -668,14 +668,31 @@ export default function EditorialLanding() {
             <div className="ed-trust__track">
               {[0, 1].map((dup) => (
                 <ul key={dup} className="ed-trust__logos">
-                  <li>MIR&nbsp;Capital</li>
-                  <li>BMC&nbsp;AI</li>
-                  <li>Berkeley&nbsp;Travel</li>
-                  <li>Atmosnav</li>
-                  <li>M&nbsp;Residences&nbsp;Budapest</li>
-                  <li>Bush&nbsp;Hall&nbsp;Music</li>
-                  <li>Star&nbsp;Ancients</li>
-                  <li>Ledger&nbsp;Rocket</li>
+                  {[
+                    { src: "/company-logos/british-media-company.png",  alt: "British Media Company" },
+                    { src: "/company-logos/damus-capital.svg",          alt: "Damus Capital" },
+                    { src: "/company-logos/abrahamic-investments.webp", alt: "Abrahamic Investments" },
+                    { src: "/company-logos/profin-partners.svg",        alt: "ProFin Partners" },
+                    { src: "/company-logos/resolve-capital.svg",        alt: "Resolve Capital" },
+                    { src: "/company-logos/osprey.svg",                 alt: "Osprey" },
+                    { src: "/company-logos/marriott-budapest.png",      alt: "Marriott Budapest" },
+                    { src: "/company-logos/berkeley-travel.svg",        alt: "Berkeley Travel" },
+                    { src: "/company-logos/kinzercoins.png",            alt: "Kinzer Coins" },
+                    { src: "/company-logos/jd-spirits.webp",            alt: "JD Spirits" },
+                    { src: "/company-logos/star.png",                   alt: "Star Ancients" },
+                    { src: "/company-logos/southwest-sips.png",         alt: "Southwest Sips" },
+                    { src: "/company-logos/big5-vape-shop.png",         alt: "Big5 Vape Shop" },
+                    { src: "/company-logos/a-home-touch.png",           alt: "A Home Touch" },
+                    { src: "/company-logos/verde-group-ai.png",         alt: "Verde Group AI" },
+                    { src: "/company-logos/singularity-group.svg",      alt: "The Singularity Group" },
+                    { src: "/company-logos/ledger-rocket.svg",          alt: "Ledger Rocket" },
+                    { src: "/company-logos/supersonicship.svg",         alt: "Supersonic Ship" },
+                    { src: "/company-logos/bridgemaster.webp",          alt: "Bridge Master" },
+                  ].map((logo) => (
+                    <li key={`${dup}-${logo.alt}`}>
+                      <img src={logo.src} alt={logo.alt} loading="lazy" />
+                    </li>
+                  ))}
                 </ul>
               ))}
             </div>

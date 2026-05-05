@@ -2644,39 +2644,43 @@
 
 .ed-trust__marquee .ed-trust__logos {
   display: flex;
-  gap: 56px;
+  gap: 64px;
   margin: 0;
   padding: 0 28px;
   list-style: none;
   flex-shrink: 0;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 18px;
-  letter-spacing: -0.02em;
-  color: var(--text-sub);
   align-items: center;
 }
 
 .ed-trust__marquee .ed-trust__logos li {
-  opacity: 0.55;
-  white-space: nowrap;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  transition: opacity 0.35s var(--ease-luxe), color 0.35s var(--ease-luxe);
+  justify-content: center;
+  height: 44px;
+  flex-shrink: 0;
+  transition: opacity 0.35s var(--ease-luxe), filter 0.35s var(--ease-luxe);
+  opacity: 0.65;
+  filter: grayscale(100%) brightness(0) invert(1);
 }
 
 .ed-trust__marquee .ed-trust__logos li:hover {
   opacity: 1;
-  color: var(--text);
+  filter: grayscale(0%) brightness(1) invert(0);
 }
 
-.ed-trust__marquee .ed-trust__logos i {
-  font-style: normal;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.1em;
-  color: var(--text-muted);
+.ed-trust__marquee .ed-trust__logos li img {
+  max-height: 100%;
+  max-width: 160px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .ed-trust__marquee .ed-trust__logos { gap: 80px; }
+  .ed-trust__marquee .ed-trust__logos li { height: 52px; }
+  .ed-trust__marquee .ed-trust__logos li img { max-width: 180px; }
 }
 
 @keyframes marqueeSlide {

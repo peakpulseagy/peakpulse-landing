@@ -415,6 +415,41 @@ html { scroll-behavior: smooth; }
   cursor: default;
 }
 
+/* ── Social row in Connect column ── */
+.footer-social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
+}
+
+.footer-social a {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--border-mid);
+  background: color-mix(in srgb, var(--card) 60%, transparent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-sub);
+  transition: all 0.3s var(--ease-luxe);
+}
+
+.footer-social a svg {
+  width: 16px;
+  height: 16px;
+}
+
+.footer-social a:hover {
+  color: var(--text);
+  background: var(--coral-dim);
+  border-color: var(--coral);
+  transform: translateY(-2px);
+}
+
 .footer-note {
   font-family: var(--font-mono);
   font-size: 10px;
