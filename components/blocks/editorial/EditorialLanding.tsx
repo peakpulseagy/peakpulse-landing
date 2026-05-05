@@ -167,7 +167,8 @@ function DustReveal({
     let running = false;
     let visible = true;
 
-    const LOOP = 18000; // 18s full cycle — calm, deliberate
+    // (No phase loop any more — particles are pure ambient. The
+    // dashboard is always visible, the wave just breathes around it.)
 
     // Pre-computed flowing gradient palette: 512 lookup entries cycling
     // white → teal → soft blue → coral → white. Each particle samples
@@ -370,9 +371,6 @@ function DustReveal({
       return list;
     };
 
-    const easeInOut = (t: number) =>
-      t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
-
     // Multi-octave wave field — produces a fluid, sand-being-blown look.
     // Each particle's home position + seed phase-shifts the curves so
     // neighbours move similarly (read as a wave) but never identically.
@@ -403,116 +401,48 @@ function DustReveal({
       target.style.setProperty("--reveal-scale", String(1 + (1 - reveal) * 0.05));
     };
 
+    // Dashboard stays fully revealed forever. The card and the text
+    // inside it are the priority — they must never be obscured.
+    setReveal(1);
+
     const draw = (now: number) => {
       const elapsed = now - startedAt - pauseTotal;
-      const cycle = (elapsed % LOOP) / LOOP; // 0..1
 
-      // Phase boundaries inside one loop
-      // 0.00 – 0.30   DANCE     (4.8s)
-      // 0.30 – 0.50   CONVERGE  (3.2s)
-      // 0.50 – 0.72   HOLD      (3.5s)
-      // 0.72 – 1.00   DISPERSE  (4.5s)
-      let phase: "dance" | "converge" | "hold" | "disperse";
-      let phaseT: number;
-      let dashboardReveal: number;
-      let alphaMul: number;
-
-      // Phase boundaries — DANCE long, CONVERGE/DISPERSE snappy, HOLD long.
-      // Snappy transitions mean any in-transit grain is on screen for
-      // such a short moment that the eye reads it as a flash, not mess.
-      //
-      //   0.00 – 0.36   DANCE     (~6.5s) — visible wave
-      //   0.36 – 0.42   CONVERGE  (~1.1s) — snap into formation
-      //   0.42 – 0.92   HOLD      (~9.0s) — clean dashboard
-      //   0.92 – 1.00   DISPERSE  (~1.4s) — snap back to dance
-      if (cycle < 0.36) {
-        phase = "dance";
-        phaseT = cycle / 0.36;
-        dashboardReveal = 0;
-        alphaMul = 0.72;
-      } else if (cycle < 0.42) {
-        phase = "converge";
-        phaseT = (cycle - 0.36) / 0.06;
-        dashboardReveal = easeInOut(phaseT);
-        alphaMul = 0.72 * (1 - easeInOut(phaseT));
-      } else if (cycle < 0.92) {
-        phase = "hold";
-        phaseT = (cycle - 0.42) / 0.50;
-        dashboardReveal = 1;
-        alphaMul = 0;
-      } else {
-        phase = "disperse";
-        phaseT = (cycle - 0.92) / 0.08;
-        dashboardReveal = 1 - easeInOut(phaseT);
-        alphaMul = 0.72 * easeInOut(phaseT);
-      }
-
-      setReveal(dashboardReveal);
-
-      // Clear the buffer
       if (!buf || !imageData) {
         raf = requestAnimationFrame(draw);
         return;
       }
       buf.fill(0);
 
-      // HOLD — skip work entirely. The dashboard sits 100% clean.
-      if (alphaMul <= 0.001) {
-        ctx.putImageData(imageData, 0, 0);
-        raf = requestAnimationFrame(draw);
-        return;
-      }
-
       const time = elapsed;
-      // Gradient flow speed — full sweep every ~6s
+      // Gradient flow speed — full palette sweep every ~6s
       const gradOffset = (time * 0.000165) % 1;
       const W = bufW;
       const H = bufH;
 
-      // Cache for hot loop
+      // Slow alpha breathing across the whole field (~12s sine)
+      // so the wave feels alive without any phase changes.
+      const breathe = 0.55 + 0.30 * Math.sin((time * 2 * Math.PI) / 12000);
+
       const pal = palette;
       const data = buf;
+
+      // Pixel-space dashboard rect (with 1-px padding for safety) —
+      // any grain that lands inside this rect is skipped. The card
+      // and its text always render fully clean, no leftover dust.
+      const dashLeftPx = (PAD * dpr) | 0;
+      const dashTopPx = (PAD * dpr) | 0;
+      const dashRightPx = ((PAD + (cw - PAD * 2)) * dpr) | 0;
+      const dashBottomPx = ((PAD + (ch - PAD * 2)) * dpr) | 0;
 
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
 
-        // Compute position for this phase + per-grain alpha handoff.
-        // pAlpha = 1 means the grain is fully visible at its current
-        // position; 0 means it's hidden. This is how we keep transitions
-        // tidy: a grain that has reached its target fades out while the
-        // dashboard pixels take over, and a grain that hasn't left yet
-        // during disperse stays hidden until it actually moves.
-        const wx = p.hx + waveX(p, time);
-        const wy = p.hy + waveY(p, time);
+        // Pure ambient dance: home + multi-octave wave offset.
+        const px = p.hx + waveX(p, time);
+        const py = p.hy + waveY(p, time);
 
-        let px: number;
-        let py: number;
-        let pAlpha = 1;
-
-        if (phase === "dance") {
-          px = wx;
-          py = wy;
-        } else if (phase === "converge") {
-          const s = (phaseT - p.stagger) / (1 - p.stagger);
-          const e = s <= 0 ? 0 : s >= 1 ? 1 : easeInOut(s);
-          px = wx + (p.tx - wx) * e;
-          py = wy + (p.ty - wy) * e;
-          // Cubic fade so grains in transit are barely visible —
-          // they only flash bright at the moment of arrival, then
-          // are gone. No half-rendered stragglers in the middle.
-          const inv = 1 - e;
-          pAlpha = inv * inv * inv;
-        } else {
-          const s = (phaseT - p.stagger) / (1 - p.stagger);
-          const e = s <= 0 ? 0 : s >= 1 ? 1 : easeInOut(s);
-          px = p.tx + (wx - p.tx) * e;
-          py = p.ty + (wy - p.ty) * e;
-          // Mirror: cubic fade-in only after the grain has actually
-          // peeled off its target.
-          pAlpha = e * e * e;
-        }
-
-        const a = alphaMul * pAlpha;
+        const a = breathe;
         if (a < 0.012) continue;
 
         // Sample the moving gradient
@@ -523,12 +453,21 @@ function DustReveal({
         const g = pal[palIdx + 1];
         const b = pal[palIdx + 2];
 
-        // To pixel coords (DPR-aware)
         const x = (px * dpr) | 0;
         const y = (py * dpr) | 0;
         if (x < 0 || x >= W || y < 0 || y >= H) continue;
 
-        // Manual additive blend so dense overlaps glow softly.
+        // Hard clip: never paint pixels that fall inside the dashboard
+        // rect. The frame and its text remain crystal clear.
+        if (
+          x >= dashLeftPx &&
+          x < dashRightPx &&
+          y >= dashTopPx &&
+          y < dashBottomPx
+        ) {
+          continue;
+        }
+
         const off = (y * W + x) << 2;
         const ar = (r * a) | 0;
         const ag = (g * a) | 0;

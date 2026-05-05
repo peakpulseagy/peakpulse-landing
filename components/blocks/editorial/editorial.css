@@ -788,13 +788,13 @@
   contain: paint;
 }
 
-/* Dust phase initial state — JS owns these vars after mount, but we
-   set sensible defaults so the dashboard starts hidden behind dust
-   rather than flashing finished UI before the canvas takes over. */
+/* Dashboard is always visible. The canvas overlays only the halo
+   ring around it; pixels that would land on the frame are clipped
+   in JS so the card and its text stay crystal clear at all times. */
 .ed-hero__visual--dust {
-  --reveal: 0;
-  --reveal-blur: 24px;
-  --reveal-scale: 1.05;
+  --reveal: 1;
+  --reveal-blur: 0px;
+  --reveal-scale: 1;
 }
 
 .ed-hero__visual--dust .ed-frame--main,
