@@ -167,7 +167,7 @@ function DustReveal({
     let running = false;
     let visible = true;
 
-    const LOOP = 16000; // 16s full cycle (matches the logo's calmer rhythm)
+    const LOOP = 18000; // 18s full cycle — calm, deliberate
 
     type Particle = {
       tx: number;     // target X on the dashboard
@@ -214,9 +214,9 @@ function DustReveal({
       innerW: number;
       innerH: number;
     }) => {
-      // Adaptive count: plenty on desktop, lighter on small screens
+      // Adaptive count, deliberately leaner so the formation reads clean
       const area = innerW * innerH;
-      const COUNT = Math.min(7200, Math.max(2200, Math.round(area / 95)));
+      const COUNT = Math.min(3200, Math.max(1400, Math.round(area / 220)));
 
       const list: Particle[] = [];
       const cxc = width / 2;
@@ -226,17 +226,19 @@ function DustReveal({
       const barHeights = [0.32, 0.56, 0.44, 0.78, 0.64, 0.92, 1.0];
 
       for (let i = 0; i < COUNT; i++) {
-        // Decide where this particle's TARGET should land on the dashboard
+        // Decide where this particle's TARGET should land on the dashboard.
+        // Heavier on the silhouette + chart bars; very light interior fill
+        // so the formation reads as a clean dashboard, not a noisy cloud.
         const cat = Math.random();
         let tx = 0;
         let ty = 0;
 
-        if (cat < 0.16) {
+        if (cat < 0.18) {
           // Top chrome band (window dots + URL)
           tx = PAD + Math.random() * innerW;
-          ty = PAD + Math.random() * Math.min(innerH * 0.10, 56);
-        } else if (cat < 0.46) {
-          // The bar chart — what most people read as "the dashboard"
+          ty = PAD + Math.random() * Math.min(innerH * 0.09, 50);
+        } else if (cat < 0.55) {
+          // Bar chart — the strongest read of "dashboard"
           const barIdx = Math.floor(Math.random() * 7);
           const chartLeft = PAD + innerW * 0.10;
           const chartRight = PAD + innerW * 0.92;
@@ -245,58 +247,49 @@ function DustReveal({
           const bh = barHeights[barIdx];
           const chartTop = PAD + innerH * 0.55;
           const chartBot = PAD + innerH * 0.84;
-          tx = chartLeft + (barIdx + 0.5) * slot + (Math.random() - 0.5) * slot * 0.6;
-          // Distribute up the bar — denser at the bar top edge
-          const v = Math.pow(Math.random(), 0.7); // bias toward 1 (top)
+          tx = chartLeft + (barIdx + 0.5) * slot + (Math.random() - 0.5) * slot * 0.5;
+          const v = Math.pow(Math.random(), 0.6);
           ty = chartBot - v * (chartBot - chartTop) * bh;
-        } else if (cat < 0.78) {
-          // Outline of the frame so the silhouette forms cleanly
+        } else if (cat < 0.92) {
+          // Frame outline — crisp silhouette
           const side = Math.floor(Math.random() * 4);
           const t = Math.random();
           if (side === 0) {
             tx = PAD + t * innerW;
-            ty = PAD + Math.random() * 4;
+            ty = PAD + Math.random() * 3;
           } else if (side === 1) {
             tx = PAD + t * innerW;
-            ty = PAD + innerH - Math.random() * 4;
+            ty = PAD + innerH - Math.random() * 3;
           } else if (side === 2) {
-            tx = PAD + Math.random() * 4;
+            tx = PAD + Math.random() * 3;
             ty = PAD + t * innerH;
           } else {
-            tx = PAD + innerW - Math.random() * 4;
+            tx = PAD + innerW - Math.random() * 3;
             ty = PAD + t * innerH;
           }
-        } else if (cat < 0.90) {
-          // Headline area "Engagement up +218%"
-          tx = PAD + innerW * (0.10 + Math.random() * 0.70);
-          ty = PAD + innerH * (0.30 + Math.random() * 0.18);
         } else {
-          // Subtle scattered interior — soft fill so the inside isn't empty
-          tx = PAD + innerW * (0.06 + Math.random() * 0.88);
-          ty = PAD + innerH * (0.20 + Math.random() * 0.60);
+          // Headline band only — no random interior fill (kept the inside clean)
+          tx = PAD + innerW * (0.10 + Math.random() * 0.65);
+          ty = PAD + innerH * (0.30 + Math.random() * 0.16);
         }
 
-        // Home (dance) position: scattered around the canvas center.
-        // Bias toward filling the canvas so the wave looks dense.
+        // Home (dance) position: scattered around canvas center
         const ang = Math.random() * Math.PI * 2;
-        const rr = Math.min(width, height) * (0.18 + Math.random() * 0.55);
+        const rr = Math.min(width, height) * (0.20 + Math.random() * 0.50);
         const hx = cxc + Math.cos(ang) * rr;
         const hy = cyc + Math.sin(ang) * rr * 0.85;
 
-        const rh = Math.random();
-        // 70% pure white sand, 22% teal accent, 8% coral accent
-        const hue = rh < 0.70 ? 0 : rh < 0.92 ? 165 : 4;
-
+        // Pure white sand only — coloured accents added too much chroma noise
         list.push({
           tx,
           ty,
           hx,
           hy,
-          hAmp: 14 + Math.random() * 36,
+          hAmp: 10 + Math.random() * 26,
           seed: Math.random(),
-          size: 0.28 + Math.random() * 0.82,
-          hue,
-          stagger: Math.random() * 0.22,
+          size: 0.30 + Math.random() * 0.55, // finer + tighter range = crisper
+          hue: 0,
+          stagger: Math.random() * 0.20,
         });
       }
       return list;
@@ -349,33 +342,43 @@ function DustReveal({
       let dashboardReveal: number;
       let alphaMul: number;
 
-      if (cycle < 0.30) {
+      // Phase boundaries — DANCE → CONVERGE → HOLD → DISPERSE
+      // During HOLD the particles are fully invisible so the dashboard
+      // reads completely clean, no shimmer noise sitting on top.
+      if (cycle < 0.28) {
         phase = "dance";
-        phaseT = cycle / 0.30;
+        phaseT = cycle / 0.28;
         dashboardReveal = 0;
-        alphaMul = 0.85;
-      } else if (cycle < 0.50) {
+        alphaMul = 0.78;
+      } else if (cycle < 0.48) {
         phase = "converge";
-        phaseT = (cycle - 0.30) / 0.20;
+        phaseT = (cycle - 0.28) / 0.20;
         dashboardReveal = easeInOut(phaseT);
-        alphaMul = 0.85 - phaseT * 0.50; // 0.85 → 0.35 as dashboard takes over
-      } else if (cycle < 0.72) {
+        alphaMul = 0.78 * (1 - easeInOut(phaseT)); // → 0 as dashboard takes over
+      } else if (cycle < 0.74) {
         phase = "hold";
-        phaseT = (cycle - 0.50) / 0.22;
+        phaseT = (cycle - 0.48) / 0.26;
         dashboardReveal = 1;
-        alphaMul = 0.28; // subtle dust shimmer on the dashboard
+        alphaMul = 0;
       } else {
         phase = "disperse";
-        phaseT = (cycle - 0.72) / 0.28;
+        phaseT = (cycle - 0.74) / 0.26;
         dashboardReveal = 1 - easeInOut(phaseT);
-        alphaMul = 0.28 + phaseT * 0.55; // 0.28 → 0.83
+        alphaMul = 0.78 * easeInOut(phaseT); // 0 → 0.78
       }
 
       setReveal(dashboardReveal);
 
       ctx.clearRect(0, 0, cw, ch);
-      ctx.globalCompositeOperation = "lighter";
 
+      // HOLD phase — skip the per-particle loop entirely. Canvas is empty,
+      // the dashboard reads completely clean.
+      if (alphaMul <= 0.001) {
+        raf = requestAnimationFrame(draw);
+        return;
+      }
+
+      ctx.globalCompositeOperation = "lighter";
       const time = elapsed;
 
       for (let i = 0; i < particles.length; i++) {
@@ -390,29 +393,19 @@ function DustReveal({
           px = wx;
           py = wy;
         } else if (phase === "converge") {
-          // Stagger by per-particle offset so they trickle into place
           const s = (phaseT - p.stagger) / (1 - p.stagger);
           const e = easeInOut(Math.max(0, Math.min(1, s)));
           px = wx + (p.tx - wx) * e;
           py = wy + (p.ty - wy) * e;
-        } else if (phase === "hold") {
-          // Tiny drift so the sand never freezes
-          px = p.tx + waveX(p, time) * 0.10;
-          py = p.ty + waveY(p, time) * 0.10;
         } else {
+          // disperse
           const s = (phaseT - p.stagger) / (1 - p.stagger);
           const e = easeInOut(Math.max(0, Math.min(1, s)));
           px = p.tx + (wx - p.tx) * e;
           py = p.ty + (wy - p.ty) * e;
         }
 
-        const a = alphaMul;
-        let fill: string;
-        if (p.hue === 0) fill = `rgba(255, 255, 255, ${a * 0.95})`;
-        else if (p.hue === 165) fill = `rgba(0, 212, 170, ${a * 0.85})`;
-        else fill = `rgba(255, 92, 92, ${a * 0.85})`;
-
-        ctx.fillStyle = fill;
+        ctx.fillStyle = `rgba(255, 255, 255, ${alphaMul * 0.92})`;
         ctx.beginPath();
         ctx.arc(px, py, p.size, 0, Math.PI * 2);
         ctx.fill();
