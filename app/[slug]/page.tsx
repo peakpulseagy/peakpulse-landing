@@ -5,6 +5,7 @@ import {PAGE_QUERY} from "../../sanity/lib/client";
 import Pages from "../../components/pages/Pages";
 import {Metadata} from "next";
 import { sanityFetch } from "@/sanity/lib/live";
+import { notFound } from "next/navigation";
 
 type Params = {slug: string};
 
@@ -72,24 +73,18 @@ export default async function Page({ params }: { params: Promise<Params> }) {
   const query = defineQuery(PAGE_QUERY);
   const resolvedParams = await params;
   
-   try {
-    const { data: page } = await sanityFetch({
-      query,
-      params: {
-        ...resolvedParams,
-      },
-      
-    });
-      if (!page) {
-        throw new Error("404 - 404: Lost in Space-Time Continuum");
-      }
+   const { data: page } = await sanityFetch({
+    query,
+    params: {
+      ...resolvedParams,
+    },
+  });
 
-      return <Pages page={page} />;
-    } catch (error) {
-      throw new Error(
-        (error as Error).message || "An unexpected error occurred while loading the page."
-      );
-    }
+  if (!page) {
+    notFound();
+  }
+
+  return <Pages page={page} />;
 }
 export async function generateStaticParams() {
   const query = defineQuery(ALLPAGE_QUERY);
