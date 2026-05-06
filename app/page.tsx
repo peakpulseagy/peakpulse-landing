@@ -29,7 +29,7 @@ export async function generateMetadata(): Promise<Metadata> {
         data && data.meta_description != null
           ? data.meta_description
           : "PeakPulse Agency is a performance-driven digital solutions firm based in Puerto Princesa, Mimaropa, Philippines. We deliver expert web development, professional video production, strategic digital marketing, and comprehensive automation solutions to small and large businesses.",
-      url: `https://peak-pulse.vercel.app/`,
+      url: `https://peakpulseagy.com/`,
       siteName: metaTitle,
       type: "website",
     },
