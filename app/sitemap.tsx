@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const ROOT_URL = "https://peak-pulse.vercel.app";
+  const ROOT_URL = "https://peakpulseagy.com";
   return [
     
     {
