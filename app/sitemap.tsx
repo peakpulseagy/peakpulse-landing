@@ -1,50 +1,39 @@
 import { MetadataRoute } from "next";
+import { client, ALLPAGE_QUERY } from "@/sanity/lib/client";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export const revalidate = 3600; // Refresh sitemap every hour
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const ROOT_URL = "https://peakpulseagy.com";
-  return [
-    
-    {
-      url: ROOT_URL,
-      lastModified: new Date(),
-      changeFrequency: "yearly",
-      priority: 1,
-    },
-    // {
-    //   url: ROOT_URL + "/about-us",
-    //   lastModified: new Date(),
-    //   changeFrequency: "monthly",
-    //   priority: 0.8,
-    // },
-    // {
-    //   url: ROOT_URL + "/portfolio",
-    //   lastModified: new Date(),
-    //   changeFrequency: "weekly",
-    //   priority: 0.5,
-    // },
-    // {
-    //   url: ROOT_URL + "/news",
-    //   lastModified: new Date(),
-    //   changeFrequency: "weekly",
-    //   priority: 0.5,
-    // },
-    // {
-    //   url: ROOT_URL + "/contact",
-    //   lastModified: new Date(),
-    //   changeFrequency: "weekly",
-    //   priority: 0.5,
-    // },
-    // {
-    //   url: ROOT_URL + "/disclaimer",
-    //   lastModified: new Date(),
-    //   changeFrequency: "weekly",
-    //   priority: 0.5,
-    // },
-    // {
-    //   url: ROOT_URL + "/privacy-policy",
-    //   lastModified: new Date(),
-    //   changeFrequency: "weekly",
-    //   priority: 0.5,
-    // },
-  ];
+
+  // Homepage is always indexed
+  const homepage = {
+    url: ROOT_URL,
+    lastModified: new Date(),
+    changeFrequency: "weekly" as const,
+    priority: 1,
+  };
+
+  // Pull every published page from Sanity. If Sanity is unreachable,
+  // we still return the homepage so the sitemap doesn't 500.
+  let pages: Array<{ slug?: string; _updatedAt?: string }> = [];
+  try {
+    const result = await client.fetch(ALLPAGE_QUERY, {}, { cache: "no-store" });
+    if (Array.isArray(result)) {
+      pages = result;
+    }
+  } catch {
+    pages = [];
+  }
+
+  const pageEntries = pages
+    .filter((p) => typeof p.slug === "string" && p.slug && p.slug !== "investors")
+    .map((p) => ({
+      url: `${ROOT_URL}/${p.slug}`,
+      lastModified: p._updatedAt ? new Date(p._updatedAt) : new Date(),
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    }));
+
+  return [homepage, ...pageEntries];
 }
