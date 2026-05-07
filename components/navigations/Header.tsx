@@ -120,9 +120,10 @@ const Header = ({ navigation }: { navigation: HeaderValues }) => {
             }
 
             // 2️⃣ Internal page
+              const slugObj = item.page?.slug as Record<string, unknown> | undefined;
               const pageSlug =
-                (typeof item.page?.slug?.current === "string" && item.page.slug.current) ||
-                (typeof item.page?.slug?.slug === "string" && item.page.slug.slug);
+                (typeof slugObj?.current === "string" && slugObj.current) ||
+                (typeof slugObj?.slug === "string" && slugObj.slug);
               if (pageSlug) {
                 return (
                   <li key={index}>
@@ -199,9 +200,10 @@ const Header = ({ navigation }: { navigation: HeaderValues }) => {
                 );
               }
 
-         const mobilePageSlug =
-                  (typeof item.page?.slug?.current === "string" && item.page.slug.current) ||
-                  (typeof item.page?.slug?.slug === "string" && item.page.slug.slug);
+      const mobileSlugObj = item.page?.slug as Record<string, unknown> | undefined;
+                const mobilePageSlug =
+                  (typeof mobileSlugObj?.current === "string" && mobileSlugObj.current) ||
+                  (typeof mobileSlugObj?.slug === "string" && mobileSlugObj.slug);
                 if (mobilePageSlug) {
                   return (
                     <li key={index}>
