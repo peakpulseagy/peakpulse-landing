@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: "/private/",
     },
-    sitemap: "https://peak-pulse.vercel.app/sitemap.xml",
+    sitemap: "https://peakpulseagy.com/sitemap.xml",
   };
 }
