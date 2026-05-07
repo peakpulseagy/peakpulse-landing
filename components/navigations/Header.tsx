@@ -120,18 +120,21 @@ const Header = ({ navigation }: { navigation: HeaderValues }) => {
             }
 
             // 2️⃣ Internal page
-            if (item.page?.slug?.slug) {
-              return (
-                <li key={index}>
-                  <Link
-                    href={`/${item.page.slug.slug}`}
-                    className="nav-link"
-                  >
-                    {item.title}
-                  </Link>
-                </li>
-              );
-            }
+              const pageSlug =
+                (typeof item.page?.slug?.current === "string" && item.page.slug.current) ||
+                (typeof item.page?.slug?.slug === "string" && item.page.slug.slug);
+              if (pageSlug) {
+                return (
+                  <li key={index}>
+                    <Link
+                      href={`/${pageSlug}`}
+                      className="nav-link"
+                    >
+                      {item.title}
+                    </Link>
+                  </li>
+                );
+              }
 
             // 3️⃣ External/custom link
             // if (item.link) {
@@ -196,19 +199,21 @@ const Header = ({ navigation }: { navigation: HeaderValues }) => {
                 );
               }
 
-              if (item.page?.slug?.slug) {
-                return (
-                  <li key={index}>
-                    <Link
-                      href={`/${item.page.slug.slug}`}
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      {item.title}
-                    </Link>
-                  </li>
-                );
-              }
-
+         const mobilePageSlug =
+                  (typeof item.page?.slug?.current === "string" && item.page.slug.current) ||
+                  (typeof item.page?.slug?.slug === "string" && item.page.slug.slug);
+                if (mobilePageSlug) {
+                  return (
+                    <li key={index}>
+                      <Link
+                        href={`/${mobilePageSlug}`}
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        {item.title}
+                      </Link>
+                    </li>
+                  );
+                }
               return null;
             })}
           </ul>
