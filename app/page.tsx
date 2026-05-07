@@ -32,6 +32,12 @@ export async function generateMetadata(): Promise<Metadata> {
       url: `https://peakpulseagy.com/`,
       siteName: metaTitle,
       type: "website",
+      images: [
+          {
+            url: "https://peakpulseagy.com/logo.png",
+            alt: "PeakPulse Agency",
+          },
+        ],
     },
     other: {
       "Permissions-Policy":
