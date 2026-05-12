@@ -1,9 +1,14 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import "./globals.css";
 import { sanityFetch, SanityLive } from "@/sanity/lib/live";
 import { draftMode } from "next/headers";
 import { VisualEditing } from "next-sanity/visual-editing";
 import { DisableDraftMode } from "@/components/DisableDraftMode";
+
+// Google Ads conversion tracking — fires on every page so conversion
+// events can be attributed back to the originating ad click.
+const GOOGLE_ADS_ID = "AW-18110095524";
 
 import { Geist, Geist_Mono, Syne, DM_Sans, JetBrains_Mono, Fraunces } from "next/font/google";
 import { defineQuery } from "next-sanity";
@@ -86,6 +91,21 @@ export default async function RootLayout({
     };
   return (
     <html lang="en">
+      <head>
+        {/* Google Ads global site tag (gtag.js) */}
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ADS_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="google-ads-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${GOOGLE_ADS_ID}');
+          `}
+        </Script>
+      </head>
       <body
         className={`
           ${geistSans.variable}
