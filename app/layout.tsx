@@ -5,10 +5,16 @@ import { sanityFetch, SanityLive } from "@/sanity/lib/live";
 import { draftMode } from "next/headers";
 import { VisualEditing } from "next-sanity/visual-editing";
 import { DisableDraftMode } from "@/components/DisableDraftMode";
+import CalendlyTracking from "@/components/tracking/CalendlyTracking";
 
 // Google Ads conversion tracking — fires on every page so conversion
 // events can be attributed back to the originating ad click.
 const GOOGLE_ADS_ID = "AW-18110095524";
+
+// Calendly Strategy Call conversion action label. Combined with the
+// account ID above, this is the `send_to` value that fires whenever a
+// Calendly popup booking is confirmed (see CalendlyTracking).
+const CALENDLY_CONVERSION_LABEL = "0d5ACJSeyKscEKTByLtD";
 
 import { Geist, Geist_Mono, Syne, DM_Sans, JetBrains_Mono, Fraunces } from "next/font/google";
 import { defineQuery } from "next-sanity";
@@ -105,6 +111,17 @@ export default async function RootLayout({
             gtag('config', '${GOOGLE_ADS_ID}');
           `}
         </Script>
+        {/* Calendly inline widget assets — required for the popup CTA
+            and the event_scheduled postMessage that fires our Google
+            Ads conversion. */}
+        <link
+          rel="stylesheet"
+          href="https://assets.calendly.com/assets/external/widget.css"
+        />
+        <Script
+          src="https://assets.calendly.com/assets/external/widget.js"
+          strategy="afterInteractive"
+        />
       </head>
       <body
         className={`
@@ -118,6 +135,7 @@ export default async function RootLayout({
         `}
       >
         <Header navigation={navigationFallback} />
+        <CalendlyTracking conversionLabel={`${GOOGLE_ADS_ID}/${CALENDLY_CONVERSION_LABEL}`} />
         {children}
         {isEnabled && (
           <>

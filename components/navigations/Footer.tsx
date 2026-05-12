@@ -2,6 +2,26 @@
 import { usePathname, useRouter } from "next/navigation"
 import "./navigation.css"
 
+// Calendly booking URL — shared with header + landing-page CTAs.
+const BOOKING_URL = "https://calendly.com/fdr-peakpulse/30min";
+
+declare global {
+  interface Window {
+    Calendly?: {
+      initPopupWidget: (options: { url: string }) => void;
+    };
+  }
+}
+
+const openCalendly = (e: React.MouseEvent) => {
+  e.preventDefault();
+  if (typeof window !== "undefined" && window.Calendly?.initPopupWidget) {
+    window.Calendly.initPopupWidget({ url: BOOKING_URL });
+    return;
+  }
+  window.open(BOOKING_URL, "_blank", "noopener,noreferrer");
+};
+
 const Footer = () => {
   const pathname = usePathname()
   const router = useRouter()
@@ -63,7 +83,7 @@ const Footer = () => {
             <ul className="footer-list">
               <li><a href="mailto:fdr.peakpulse@gmail.com">fdr.peakpulse@gmail.com</a></li>
               <li><a href="https://wa.me/639104461026" target="_blank" rel="noopener noreferrer">WhatsApp · +63 910 446 1026</a></li>
-              <li><a href="https://calendly.com/fdr-peakpulse/30min" target="_blank" rel="noopener noreferrer">Book a strategy call</a></li>
+              <li><a href={BOOKING_URL} onClick={openCalendly} target="_blank" rel="noopener noreferrer">Book a strategy call</a></li>
               <li className="footer-note">4-hour response promise</li>
             </ul>
 

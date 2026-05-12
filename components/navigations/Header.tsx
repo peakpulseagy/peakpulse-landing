@@ -7,6 +7,29 @@ import "./navigation.css"
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
+// Calendly booking URL — shared with the landing-page CTAs.
+const BOOKING_URL = "https://calendly.com/fdr-peakpulse/30min";
+
+// Open Calendly inside its popup widget so the event_scheduled
+// postMessage can reach the parent window. Falls back to a new tab if
+// the widget script hasn't loaded yet.
+declare global {
+  interface Window {
+    Calendly?: {
+      initPopupWidget: (options: { url: string }) => void;
+    };
+  }
+}
+
+const openCalendly = (e: React.MouseEvent) => {
+  e.preventDefault();
+  if (typeof window !== "undefined" && window.Calendly?.initPopupWidget) {
+    window.Calendly.initPopupWidget({ url: BOOKING_URL });
+    return;
+  }
+  window.open(BOOKING_URL, "_blank", "noopener,noreferrer");
+};
+
 const Header = ({ navigation }: { navigation: HeaderValues }) => {
   const pathname = usePathname()
   const [scrolled, setScrolled] = useState<boolean | null>(false);
@@ -159,7 +182,8 @@ const Header = ({ navigation }: { navigation: HeaderValues }) => {
 
         {/* CTA → Calendly booking */}
         <a
-          href="https://calendly.com/fdr-peakpulse/30min"
+          href={BOOKING_URL}
+          onClick={openCalendly}
           target="_blank"
           rel="noopener noreferrer"
           className="cta-button"
@@ -222,10 +246,13 @@ const Header = ({ navigation }: { navigation: HeaderValues }) => {
 
           <a
             className="mobile-cta"
-            href="https://calendly.com/fdr-peakpulse/30min"
+            href={BOOKING_URL}
             target="_blank"
             rel="noopener noreferrer"
-            onClick={() => setMenuOpen(false)}
+            onClick={(e) => {
+              openCalendly(e);
+              setMenuOpen(false);
+            }}
           >
             Book Call
           </a>

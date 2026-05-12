@@ -268,7 +268,26 @@ const scrollTo = (id: string) => {
 };
 
 const BOOKING_URL = "https://calendly.com/fdr-peakpulse/30min";
-const openBooking = () => {
+
+// Open Calendly inside its popup widget when possible so the
+// `calendly.event_scheduled` postMessage can reach the parent window
+// (CalendlyTracking listens for it and fires the Google Ads conversion).
+// Falls back to a new tab if the Calendly widget script hasn't loaded
+// yet (e.g. very early click during initial hydration).
+declare global {
+  interface Window {
+    Calendly?: {
+      initPopupWidget: (options: { url: string }) => void;
+    };
+  }
+}
+
+const openBooking = (e?: { preventDefault?: () => void }) => {
+  e?.preventDefault?.();
+  if (typeof window !== "undefined" && window.Calendly?.initPopupWidget) {
+    window.Calendly.initPopupWidget({ url: BOOKING_URL });
+    return;
+  }
   window.open(BOOKING_URL, "_blank", "noopener,noreferrer");
 };
 
